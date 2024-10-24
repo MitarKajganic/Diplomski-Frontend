@@ -12,24 +12,28 @@ import {
   Tooltip,
   Avatar,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isActive = (path: string) => location.pathname === path;
+
   // Separate anchor elements for Profile and Mobile menus
   const [anchorElProfile, setAnchorElProfile] = useState<null | HTMLElement>(null);
   const [anchorElMobile, setAnchorElMobile] = useState<null | HTMLElement>(null);
-  
+
   const openProfile = Boolean(anchorElProfile);
   const openMobile = Boolean(anchorElMobile);
 
   // Handlers for Profile Menu
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElProfile(event.currentTarget);
-    setAnchorElMobile(null); // Close Mobile Menu if open
+    setAnchorElMobile(null);
   };
 
   const handleProfileMenuClose = () => {
@@ -39,7 +43,7 @@ const Navbar: React.FC = () => {
   // Handlers for Mobile Menu
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElMobile(event.currentTarget);
-    setAnchorElProfile(null); // Close Profile Menu if open
+    setAnchorElProfile(null);
   };
 
   const handleMobileMenuClose = () => {
@@ -50,6 +54,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     handleProfileMenuClose();
+    navigate('/login');
   };
 
   // Determine which buttons to show based on user role
@@ -157,20 +162,21 @@ const Navbar: React.FC = () => {
         </Typography>
 
         {/* Navigation Links for Desktop */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
           <Button
             component={RouterLink}
             to="/home"
             color="inherit"
             sx={{
               fontFamily: 'League Spartan, sans-serif',
-              fontWeight: 'bold',
+              fontWeight: isActive('/home') ? 'bold' : 'normal',
               textTransform: 'none',
               mr: 2,
+              color: isActive('/home') ? 'primary.main' : 'inherit',
               '&:hover': {
                 color: 'primary.main',
               },
-              transition: 'color 0.3s ease',
+              transition: 'color 0.3s ease, font-weight 0.3s ease',
             }}
           >
             Home
@@ -181,13 +187,14 @@ const Navbar: React.FC = () => {
             color="inherit"
             sx={{
               fontFamily: 'League Spartan, sans-serif',
-              fontWeight: 'bold',
+              fontWeight: isActive('/menu') ? 'bold' : 'normal',
               textTransform: 'none',
               mr: 2,
+              color: isActive('/menu') ? 'primary.main' : 'inherit',
               '&:hover': {
                 color: 'primary.main',
               },
-              transition: 'color 0.3s ease',
+              transition: 'color 0.3s ease, font-weight 0.3s ease',
             }}
           >
             Menu
@@ -198,13 +205,14 @@ const Navbar: React.FC = () => {
             color="inherit"
             sx={{
               fontFamily: 'League Spartan, sans-serif',
-              fontWeight: 'bold',
+              fontWeight: isActive('/reservation') ? 'bold' : 'normal',
               textTransform: 'none',
               mr: 2,
+              color: isActive('/reservation') ? 'primary.main' : 'inherit',
               '&:hover': {
                 color: 'primary.main',
               },
-              transition: 'color 0.3s ease',
+              transition: 'color 0.3s ease, font-weight 0.3s ease',
             }}
           >
             Reservation
@@ -212,7 +220,7 @@ const Navbar: React.FC = () => {
 
           {/* Role-Based Buttons */}
           {renderRoleBasedButtons()}
-          
+
           {/* Login Button for Desktop (Visible when not logged in) */}
           {!user && (
             <Button
@@ -232,10 +240,89 @@ const Navbar: React.FC = () => {
               Login
             </Button>
           )}
+
+          {/* Profile Dropdown for Desktop */}
+          {user && (
+            <>
+              <Tooltip title="Account settings">
+                <IconButton
+                  onClick={handleProfileMenuOpen}
+                  size="small"
+                  sx={{ ml: 2 }}
+                  aria-controls={openProfile ? 'account-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openProfile ? 'true' : undefined}
+                >
+                  <Avatar sx={{ width: 32, height: 32 }}>
+                    {user.email.charAt(0).toUpperCase()}
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorElProfile}
+                id="account-menu"
+                open={openProfile}
+                onClose={handleProfileMenuClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    mt: '45px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Match navbar background
+                    color: 'white',
+                    fontFamily: 'League Spartan, sans-serif',
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: 'rgba(0, 0, 0, 0.7)', // Match navbar background
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem onClick={handleLogout} sx={{ fontFamily: 'League Spartan', color: 'white' }}>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Box>
 
         {/* Mobile Menu Icon */}
         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
+          {/* Show Profile Avatar only when logged in */}
+          {user && (
+            <Tooltip title="Account settings">
+              <IconButton
+                onClick={handleProfileMenuOpen}
+                size="small"
+                sx={{ mr: 1 }}
+                aria-controls={openProfile ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={openProfile ? 'true' : undefined}
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {user.email.charAt(0).toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          )}
+
           {/* Mobile Menu Icon */}
           <IconButton
             size="large"
@@ -249,63 +336,61 @@ const Navbar: React.FC = () => {
           </IconButton>
         </Box>
 
-        {/* Profile Dropdown for Desktop */}
+        {/* Profile Dropdown for Mobile */}
         {user && (
-          <>
-            <Tooltip title="Account settings">
-              <IconButton
-                onClick={handleProfileMenuOpen}
-                size="small"
-                sx={{ ml: 2 }}
-                aria-controls={openProfile ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={openProfile ? 'true' : undefined}
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>
-                  {user.email.charAt(0).toUpperCase()}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              anchorEl={anchorElProfile}
-              id="account-menu"
-              open={openProfile}
-              onClose={handleProfileMenuClose}
-              onClick={handleProfileMenuClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  mt: '45px',
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  '& .MuiAvatar-root': {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
-                  },
-                  '&:before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
+          <Menu
+            anchorEl={anchorElProfile}
+            id="account-menu"
+            open={openProfile}
+            onClose={handleProfileMenuClose}
+            onClick={handleProfileMenuClose}
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                mt: '45px',
+                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                color: 'white',
+                fontFamily: 'League Spartan, sans-serif',
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
                 },
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'rgba(0, 0, 0, 0.7)',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem
+                onClick={handleLogout}
+                sx={{
+                fontFamily: 'League Spartan, sans-serif',
+                color: 'white',
+                '&:hover': {
+                    color: 'primary.main',
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                },
+                transition: 'color 0.3s ease, background-color 0.3s ease',
+                }}
             >
-              <MenuItem onClick={handleLogout} sx={{ fontFamily: 'League Spartan' }}>
                 Logout
-              </MenuItem>
-            </Menu>
-          </>
+            </MenuItem>
+          </Menu>
         )}
       </Toolbar>
 
@@ -319,6 +404,9 @@ const Navbar: React.FC = () => {
           elevation: 0,
           sx: {
             mt: '45px',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            fontFamily: 'League Spartan, sans-serif',
             overflow: 'visible',
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             '& .MuiAvatar-root': {
@@ -335,7 +423,7 @@ const Navbar: React.FC = () => {
               right: 14,
               width: 10,
               height: 10,
-              bgcolor: 'background.paper',
+              bgcolor: 'rgba(0, 0, 0, 0.7)',
               transform: 'translateY(-50%) rotate(45deg)',
               zIndex: 0,
             },
@@ -345,27 +433,60 @@ const Navbar: React.FC = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {/* Navigation Links for Mobile */}
-        <MenuItem component={RouterLink} to="/home" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+        <MenuItem
+          component={RouterLink}
+          to="/home"
+          onClick={handleMobileMenuClose}
+          sx={{
+            fontFamily: 'League Spartan',
+            color: isActive('/home') ? 'primary.main' : 'inherit',
+          }}
+        >
           Home
         </MenuItem>
-        <MenuItem component={RouterLink} to="/menu" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+        <MenuItem
+          component={RouterLink}
+          to="/menu"
+          onClick={handleMobileMenuClose}
+          sx={{ fontFamily: 'League Spartan', color: isActive('/menu') ? 'primary.main' : 'inherit' }}
+        >
           Menu
         </MenuItem>
-        <MenuItem component={RouterLink} to="/reservation" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+        <MenuItem
+          component={RouterLink}
+          to="/reservation"
+          onClick={handleMobileMenuClose}
+          sx={{ fontFamily: 'League Spartan', color: isActive('/reservation') ? 'primary.main' : 'inherit' }}
+        >
           Reservation
         </MenuItem>
         {user && (
           <>
-            <MenuItem component={RouterLink} to="/order" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+            <MenuItem
+              component={RouterLink}
+              to="/order"
+              onClick={handleMobileMenuClose}
+              sx={{ fontFamily: 'League Spartan' }}
+            >
               Order
             </MenuItem>
             {(user.role === 'STAFF' || user.role === 'ADMIN') && (
-              <MenuItem component={RouterLink} to="/dashboard" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+              <MenuItem
+                component={RouterLink}
+                to="/dashboard"
+                onClick={handleMobileMenuClose}
+                sx={{ fontFamily: 'League Spartan' }}
+              >
                 Dashboard
               </MenuItem>
             )}
             {user.role === 'ADMIN' && (
-              <MenuItem component={RouterLink} to="/admin" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+              <MenuItem
+                component={RouterLink}
+                to="/admin"
+                onClick={handleMobileMenuClose}
+                sx={{ fontFamily: 'League Spartan' }}
+              >
                 Admin
               </MenuItem>
             )}
@@ -376,7 +497,12 @@ const Navbar: React.FC = () => {
             Logout
           </MenuItem>
         ) : (
-          <MenuItem component={RouterLink} to="/login" onClick={handleMobileMenuClose} sx={{ fontFamily: 'League Spartan' }}>
+          <MenuItem
+            component={RouterLink}
+            to="/login"
+            onClick={handleMobileMenuClose}
+            sx={{ fontFamily: 'League Spartan' }}
+          >
             Login
           </MenuItem>
         )}

@@ -14,7 +14,6 @@ const Home: React.FC = () => {
         navigate('/menu');
     };
 
-    // Animation variants for framer-motion
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { duration: 1 } },
@@ -34,7 +33,7 @@ const Home: React.FC = () => {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                minHeight: '100vh', // Ensures the container takes at least the full viewport height
+                minHeight: '100vh',
                 position: 'relative',
             }}
         >
@@ -46,7 +45,7 @@ const Home: React.FC = () => {
                 <Container
                     maxWidth="lg"
                     sx={{
-                        mt: { xs: 10, sm: 12 }, // Adjust top margin based on navbar height
+                        mt: { xs: 10, sm: 12 },
                         mb: 4,
                         display: 'flex',
                         flexDirection: 'column',
@@ -125,7 +124,7 @@ const Home: React.FC = () => {
                             container
                             spacing={4}
                             sx={{ mt: 8 }}
-                            alignItems="stretch" // Ensures all Grid items stretch to the same height
+                            alignItems="stretch"
                         >
                             {/* Section 1: Our Story */}
                             <Grid item xs={12} md={6}>
@@ -140,14 +139,14 @@ const Home: React.FC = () => {
                                         sx={{
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            justifyContent: 'center', // Centers content vertically
-                                            height: '100%', // Ensures the Box takes full height of Grid item
+                                            justifyContent: 'center',
+                                            height: '100%',
                                             backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                             borderRadius: 2,
                                             padding: 3,
                                             backdropFilter: 'blur(5px)',
                                             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-                                            minHeight: { xs: '200px', md: '250px' }, // Ensures a minimum height
+                                            minHeight: { xs: '200px', md: '250px' },
                                         }}
                                     >
                                         <Typography
@@ -192,14 +191,14 @@ const Home: React.FC = () => {
                                         sx={{
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            justifyContent: 'center', // Centers content vertically
-                                            height: '100%', // Ensures the Box takes full height of Grid item
+                                            justifyContent: 'center',
+                                            height: '100%',
                                             backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                             borderRadius: 2,
                                             padding: 3,
                                             backdropFilter: 'blur(5px)',
                                             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-                                            minHeight: { xs: '200px', md: '250px' }, // Ensures a minimum height
+                                            minHeight: { xs: '200px', md: '250px' },
                                         }}
                                     >
                                         <Typography
@@ -242,7 +241,7 @@ const Home: React.FC = () => {
                 sx={{
                     py: 3,
                     px: 2,
-                    mt: 'auto', // Pushes the footer to the bottom
+                    mt: 'auto',
                     backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     color: 'white',
                     textAlign: 'center',

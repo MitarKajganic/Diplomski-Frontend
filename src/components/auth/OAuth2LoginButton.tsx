@@ -9,7 +9,7 @@ const OAuth2LoginButton: React.FC = () => {
   const handleOAuthLogin = () => {
     // Implement your OAuth2 login logic here
     // For example, redirect to your backend's OAuth2 endpoint
-    window.location.href = 'http://localhost:8080/auth/google'; // Adjust the URL accordingly
+    window.location.href = 'http://localhost:8080/auth/google';
   };
 
   return (
