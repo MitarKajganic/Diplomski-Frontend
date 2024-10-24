@@ -8,7 +8,6 @@ import '@fontsource/league-spartan/400.css';
 import { motion } from 'framer-motion';
 
 const LoginPage: React.FC = () => {
-  // Define animation variants
   const pageVariants = {
     initial: { opacity: 0, x: 50 },
     in: { opacity: 1, x: 0 },
@@ -36,7 +35,7 @@ const LoginPage: React.FC = () => {
         maxWidth="xs"
         sx={{
           position: 'relative',
-          zIndex: 0, // Positioned above the overlay
+          zIndex: 0,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -54,7 +53,7 @@ const LoginPage: React.FC = () => {
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
             backdropFilter: 'blur(5px)',
             border: '0.5px solid rgba(255, 255, 255, 0.1)',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)', // Optional: add a slight background
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
           }}
         >
           {/* "Sign In" Heading */}

@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
 import { AnimatePresence } from 'framer-motion';
 import { Box } from '@mui/material';
-import backgroundImage from './assets/images/jason-leung-poI7DelFiVA-unsplash.jpg'; // Ensure the path is correct
+import backgroundImage from './assets/images/jason-leung-poI7DelFiVA-unsplash.jpg';
 
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
@@ -47,7 +47,7 @@ const AppContent: React.FC = () => {
       {/* Global Background Image */}
       <Box
         sx={{
-          position: 'fixed', // Ensures the background covers the entire viewport
+          position: 'fixed',
           top: 0,
           left: 0,
           width: '100%',
@@ -55,9 +55,9 @@ const AppContent: React.FC = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: isLoginPage ? 'brightness(0.5) blur(8px)' : 'none', // Apply brightness filter on Login Page
-          transition: 'filter 0.3s ease', // Smooth transition when changing routes
-          zIndex: -2, // Positioned behind all other elements
+          filter: isLoginPage ? 'brightness(0.5) blur(8px)' : 'none',
+          transition: 'filter 0.3s ease',
+          zIndex: -2, 
         }}
       />
 
@@ -69,8 +69,8 @@ const AppContent: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black overlay
-          zIndex: -1, // Positioned above the background image
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: -1,
           transition: 'background-color 0.3s ease',
         }}
       />

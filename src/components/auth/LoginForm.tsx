@@ -74,7 +74,6 @@ const LoginForm: React.FC = () => {
         id="email"
         label="Email Address"
         autoComplete="email"
-        autoFocus
         {...register('email', { 
           required: 'Email is required',
           pattern: {
