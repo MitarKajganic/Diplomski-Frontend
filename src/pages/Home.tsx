@@ -1,11 +1,12 @@
+// src/pages/HomeAlternative.tsx
 import React from 'react';
-import backgroundImage from '../assets/images/jason-leung-poI7DelFiVA-unsplash.jpg';
 import { Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '@fontsource/pacifico/400.css';
 import '@fontsource/league-spartan/400.css';
 import LoginIcon from '@mui/icons-material/Login';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import { motion } from 'framer-motion';
 
 const HomeAlternative: React.FC = () => {
   const navigate = useNavigate();
@@ -18,46 +19,35 @@ const HomeAlternative: React.FC = () => {
     navigate('/login');
   };
 
+  // Define animation variants
+  const pageVariants = {
+    initial: { opacity: 0, x: -50 },
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: 50 },
+  };
+
+  const pageTransition = {
+    type: 'tween',
+    ease: 'anticipate',
+    duration: 0.5,
+  };
+
   return (
-    <>
-      {/* Blurred Background */}
-      <Box
-        sx={{
-          minHeight: '100vh',
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          // filter: 'blur(8px)',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 0,
-        }}
-      />
-
-      {/* Overlay */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1,
-        }}
-      />
-
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+      transition={pageTransition}
+      style={{ position: 'relative', width: '100%', height: '100%' }}
+    >
       {/* Content */}
       <Box
         sx={{
-          position: 'relative',
           color: 'white',
           textAlign: 'center',
           px: 2,
-          zIndex: 2,
+          zIndex: 0,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -152,7 +142,7 @@ const HomeAlternative: React.FC = () => {
           </Link>
         </Box>
       </Box>
-    </>
+    </motion.div>
   );
 };
 
