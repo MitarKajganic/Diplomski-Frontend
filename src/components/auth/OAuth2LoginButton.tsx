@@ -1,19 +1,38 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
+import { Google as GoogleIcon } from '@mui/icons-material';
+// import { useNavigate } from 'react-router-dom';
 
 const OAuth2LoginButton: React.FC = () => {
-  const handleLogin = () => {
-    // Redirect to backend's OAuth2 authorization endpoint with state parameter
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google?state=frontend';
+  // const navigate = useNavigate();
+
+  const handleOAuthLogin = () => {
+    // Implement your OAuth2 login logic here
+    // For example, redirect to your backend's OAuth2 endpoint
+    window.location.href = 'http://localhost:8080/auth/google'; // Adjust the URL accordingly
   };
 
   return (
     <Button
+      onClick={handleOAuthLogin}
+      fullWidth
       variant="outlined"
       startIcon={<GoogleIcon />}
-      onClick={handleLogin}
-      fullWidth
+      sx={{
+        borderColor: 'primary.main',
+        color: 'primary.main',
+        fontWeight: 'bold',
+        textTransform: 'none',
+        border: '2px solid',
+        '&:hover': {
+          backgroundColor: 'black',
+          color: 'white',
+          borderColor: 'primary.main',
+        },
+        height: '50px',
+        fontSize: '1rem',
+        fontFamily: 'League Spartan, sans-serif',
+      }}
     >
       Sign in with Google
     </Button>

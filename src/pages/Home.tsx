@@ -2,7 +2,7 @@ import React from 'react';
 import backgroundImage from '../assets/images/jason-leung-poI7DelFiVA-unsplash.jpg';
 import { Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import '@fontsource/pacifico';
+import '@fontsource/pacifico/400.css';
 import '@fontsource/league-spartan/400.css';
 import LoginIcon from '@mui/icons-material/Login';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -27,7 +27,7 @@ const HomeAlternative: React.FC = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'blur(8px)',
+          // filter: 'blur(8px)',
           position: 'absolute',
           top: 0,
           left: 0,

@@ -1,10 +1,22 @@
+// src/components/auth/LoginForm.tsx
 import React, { useContext, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { TextField, Button, Box, Alert } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  InputAdornment,
+  IconButton,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
 import { LoginResponse } from '../../types';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import '@fontsource/pacifico/400.css';
+import '@fontsource/league-spartan/400.css';
 
 interface LoginFormInputs {
   email: string;
@@ -16,8 +28,12 @@ const LoginForm: React.FC = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+    setLoading(true);
+    setServerError(null);
     try {
       const response = await api.post<LoginResponse>('/api/auth/login', data);
       const { token } = response.data;
@@ -26,19 +42,37 @@ const LoginForm: React.FC = () => {
     } catch (error: any) {
       console.error('Login failed:', error.response?.data?.message || error.message);
       setServerError(error.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, }}>
+      {/* Server Error Alert */}
       {serverError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {serverError}
-        </Alert>
+        <Box sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ fontFamily: 'League Spartan' }}>
+            {serverError}
+          </Alert>
+        </Box>
       )}
+      
+      {/* Email Field */}
       <TextField
+        variant="filled"
         margin="normal"
+        required
         fullWidth
+        id="email"
         label="Email Address"
         autoComplete="email"
         autoFocus
@@ -51,25 +85,113 @@ const LoginForm: React.FC = () => {
         })}
         error={!!errors.email}
         helperText={errors.email?.message}
+        slotProps={{
+          input: {
+            sx: {
+              color: 'white',
+              fontFamily: 'League Spartan',
+            },
+          },
+        }}
+        InputLabelProps={{
+          sx: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontFamily: 'League Spartan',
+          },
+        }}
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: 1,
+          mb: 2,
+          transition: 'background-color 0.3s ease',
+          '&:hover .MuiFilledInput-root': {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          },
+        }}
+        InputProps={{
+          disableUnderline: true,
+        }}
       />
+
+      {/* Password Field */}
       <TextField
+        variant="filled"
         margin="normal"
+        required
         fullWidth
         label="Password"
-        type="password"
+        type={showPassword ? 'text' : 'password'}
+        id="password"
         autoComplete="current-password"
         {...register('password', { required: 'Password is required' })}
         error={!!errors.password}
         helperText={errors.password?.message}
+        slotProps={{
+          input: {
+            sx: {
+              color: 'white',
+              fontFamily: 'League Spartan',
+            },
+          },
+        }}
+        InputLabelProps={{
+          sx: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontFamily: 'League Spartan',
+          },
+        }}
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: 1,
+          mb: 3,
+          transition: 'background-color 0.3s ease',
+          '&:hover .MuiFilledInput-root': {
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          },
+        }}
+        InputProps={{
+          disableUnderline: true,
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                edge="end"
+                sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
+
+      {/* Submit Button */}
       <Button
         type="submit"
         fullWidth
-        variant="contained"
+        variant="outlined"
         color="primary"
-        sx={{ mt: 3, mb: 2 }}
+        disabled={loading}
+        sx={{
+          mt: 3,
+          mb: 2,
+          color: 'primary.main',
+          border: '2px solid',
+          borderColor: 'primary.main',
+          fontWeight: 'bold',
+          '&:hover': {
+            backgroundColor: 'black',
+            borderColor: 'primary.main',
+            color: 'white',
+          },
+          height: '50px',
+          fontSize: '1rem',
+          fontFamily: 'League Spartan',
+        }}
       >
-        Sign In
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
       </Button>
     </Box>
   );
