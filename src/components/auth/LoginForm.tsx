@@ -1,4 +1,3 @@
-// src/components/auth/LoginForm.tsx
 import React, { useContext, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import {
@@ -38,7 +37,7 @@ const LoginForm: React.FC = () => {
       const response = await api.post<LoginResponse>('/api/auth/login', data);
       const { token } = response.data;
       login(token);
-      navigate('/dashboard');
+      navigate('/landing');
     } catch (error: any) {
       console.error('Login failed:', error.response?.data?.message || error.message);
       setServerError(error.response?.data?.message || 'Login failed. Please try again.');
@@ -79,7 +78,7 @@ const LoginForm: React.FC = () => {
         {...register('email', { 
           required: 'Email is required',
           pattern: {
-            value: /^\S+@\S+$/i,
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
             message: 'Invalid email address',
           },
         })}
@@ -123,7 +122,13 @@ const LoginForm: React.FC = () => {
         type={showPassword ? 'text' : 'password'}
         id="password"
         autoComplete="current-password"
-        {...register('password', { required: 'Password is required' })}
+        {...register('password', { 
+          required: 'Password is required',
+          pattern: {
+            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+            message: 'Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit',
+          },
+        })}
         error={!!errors.password}
         helperText={errors.password?.message}
         slotProps={{

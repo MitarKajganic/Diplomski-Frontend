@@ -28,7 +28,8 @@ api.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
       if (status === 401) {
-        toast.error('Session expired. Please log in again.');
+        // toast.error('Session expired. Please log in again.');
+        toast.error(data.message || 'Session expired. Please log in again.');
       } else if (status === 403) {
         toast.error('You do not have permission to perform this action.');
       } else {

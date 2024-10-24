@@ -9,7 +9,17 @@ import '@fontsource/league-spartan/400.css';
 
 const LoginPage: React.FC = () => {
   return (
-    <Container component="main" maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        position: 'relative',
+        zIndex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}>
       {/* Blurred and Darkened Background */}
       <Box
         sx={{
