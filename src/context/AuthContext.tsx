@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     localStorage.removeItem('jwtToken');
     delete api.defaults.headers.common['Authorization'];
     toast.info('Logged out successfully.');
-    window.location.href = '/login';
+    // window.location.href = '/login';
   };
 
   return (

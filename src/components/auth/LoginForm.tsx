@@ -1,3 +1,4 @@
+// src/pages/LoginForm.tsx
 import React, { useContext, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import {
@@ -37,7 +38,7 @@ const LoginForm: React.FC = () => {
       const response = await api.post<LoginResponse>('/api/auth/login', data);
       const { token } = response.data;
       login(token);
-      navigate('/landing');
+      navigate('/home');
     } catch (error: any) {
       console.error('Login failed:', error.response?.data?.message || error.message);
       setServerError(error.response?.data?.message || 'Login failed. Please try again.');
@@ -55,7 +56,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
       {/* Server Error Alert */}
       {serverError && (
         <Box sx={{ mb: 2 }}>
@@ -162,7 +163,7 @@ const LoginForm: React.FC = () => {
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
                 edge="end"
-                sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                sx={{ color: 'rgba(255, 255, 255, 0.9)' }}
               >
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
