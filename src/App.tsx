@@ -3,7 +3,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import HomeAlternative from './pages/Home';
+import Landing from './pages/Landing';
+import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import OAuth2Callback from './pages/OAuth2Callback';
@@ -14,6 +15,7 @@ import theme from './theme';
 import { AnimatePresence } from 'framer-motion';
 import { Box } from '@mui/material';
 import backgroundImage from './assets/images/jason-leung-poI7DelFiVA-unsplash.jpg';
+import { motion } from 'framer-motion';
 
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
@@ -21,7 +23,8 @@ const AnimatedRoutes: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomeAlternative />} />
+        <Route path="/" element={<Landing />} /> {/* Landing Page */}
+        <Route path="/home" element={<Home />} /> {/* Home Page with Navbar */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route
@@ -41,6 +44,7 @@ const AnimatedRoutes: React.FC = () => {
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isLandingPage = location.pathname === '/';
 
   return (
     <>
@@ -55,9 +59,26 @@ const AppContent: React.FC = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: isLoginPage ? 'brightness(0.5) blur(8px)' : 'none',
-          transition: 'filter 0.3s ease',
-          zIndex: -2, 
+          zIndex: -3, // Ensure it's behind all other elements
+        }}
+      />
+
+      {/* Blur Overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoginPage ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backdropFilter: 'brightness(0.5) blur(8px)',
+          WebkitBackdropFilter: 'brightness(0.5) blur(8px)', // For Safari support
+          backgroundColor: 'rgba(0, 0, 0, 0)', // Transparent background
+          zIndex: -2, // Above the background image
+          pointerEvents: 'none', // Allow clicks to pass through
         }}
       />
 
@@ -69,8 +90,8 @@ const AppContent: React.FC = () => {
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: -1,
+          backgroundColor: isLandingPage ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)',
+          zIndex: -1, // Above the blur overlay
           transition: 'background-color 0.3s ease',
         }}
       />
