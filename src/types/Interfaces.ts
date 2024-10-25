@@ -43,6 +43,7 @@ export interface OrderItemDto {
   id: string;
   price: number;
   quantity: number;
+  name: string;
   orderId: string;
   menuItemId: string;
 }
@@ -54,6 +55,23 @@ export interface OrderDto {
   userId: string;
   orderItems: OrderItemDto[];
   billId: string | null;
+  deliveryInfo: DeliveryInfo;
+}
+
+export interface OrderCreateDto {
+  status: Status; // "PENDING", "COMPLETED", "CANCELLED"
+  userId: string;
+  menuItemIdsAndQuantities: { [key: string]: number };
+  deliveryInfo: DeliveryInfo;
+}
+
+export interface DeliveryInfo {
+  firstName: string;
+  lastName: string;
+  street: string;
+  number: string;
+  floor: number | null;
+  phoneNumber: string;
 }
 
 export interface ReservationDto {
@@ -125,6 +143,13 @@ export interface InventoryDto {
 export interface TransactionDto {
   id: string;
   transactionTime: string; // ISO date string
+  amount: number;
+  type: Type;
+  method: Method;
+  billId: string;
+}
+
+export interface TransactionCreateDto {
   amount: number;
   type: Type;
   method: Method;

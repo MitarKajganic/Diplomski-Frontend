@@ -109,8 +109,8 @@ const Navbar: React.FC = () => {
 
     return (
       <>
-        {/* Order Button - Visible when logged in */}
-        <NavButton to="/order" label="Order" />
+        {/* Orders Button - Visible when logged in */}
+        <NavButton to="/orders" label="Orders" />
 
         {/* Dashboard Button - Visible for STAFF and ADMIN */}
         {(role === 'STAFF' || role === 'ADMIN') && <NavButton to="/dashboard" label="Dashboard" />}

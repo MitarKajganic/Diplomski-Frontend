@@ -8,6 +8,8 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import Menu from './pages/Menu';
+import Checkout from './pages/Checkout';
+import OrderConfirmation from './pages/OrderConfirmation';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
@@ -29,13 +31,20 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
-        <Route
-          path="/dashboard"
-          element={
+        <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
+            </ProtectedRoute>} 
+        />
+        <Route path="/checkout" element={
+            <ProtectedRoute>
+              <Checkout /> 
+            </ProtectedRoute>} 
+        />
+        <Route path="/order-confirmation" element={
+            <ProtectedRoute>
+              <OrderConfirmation />
+            </ProtectedRoute>}
         />
         {/* Add more routes as needed */}
       </Routes>

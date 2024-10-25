@@ -21,6 +21,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { useCart, CartItem } from '../context/CartContext';
 import { toast } from 'react-toastify';
 import placeholderImg from '../assets/images/burger.jpg';
+import { useNavigate } from 'react-router-dom';
 
 interface CartDrawerProps {
     open: boolean;
@@ -28,7 +29,8 @@ interface CartDrawerProps {
 }
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
-    const { cartItems, removeFromCart, getTotalPrice, clearCart, updateItemQuantity } = useCart();
+    const { cartItems, removeFromCart, getTotalPrice, updateItemQuantity } = useCart();
+    const navigate = useNavigate(); 
 
     const handleRemove = (itemId: string) => {
         removeFromCart(itemId);
@@ -36,10 +38,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
     };
 
     const handleCheckout = () => {
-        // Implement checkout logic here
-        toast.success('Checkout successful!');
-        clearCart();
         onClose();
+        navigate('/checkout');
     };
 
     const handleQuantityChange = (itemId: string, newQuantity: number) => {
