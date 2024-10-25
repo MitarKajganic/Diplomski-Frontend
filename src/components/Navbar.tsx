@@ -11,10 +11,48 @@ import {
   MenuItem,
   Tooltip,
   Avatar,
+  Badge,
 } from '@mui/material';
 import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CartDrawer from './CartDrawer';
+import { useCart } from '../context/CartContext';
+import { toast } from 'react-toastify';
+
+
+interface NavButtonProps {
+  to: string;
+  label: string;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({ to, label }) => {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+  const active = isActive(to);
+
+  return (
+    <Button
+      component={RouterLink}
+      to={to}
+      color="inherit"
+      sx={{
+        fontFamily: 'League Spartan, sans-serif',
+        fontWeight: active ? 'bold' : 'normal',
+        textTransform: 'none',
+        mr: 2,
+        color: active ? 'primary.main' : 'inherit',
+        '&:hover': {
+          color: 'primary.main',
+        },
+        transition: 'color 0.3s ease, font-weight 0.3s ease',
+      }}
+    >
+      {label}
+    </Button>
+  );
+};
 
 const Navbar: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
@@ -23,14 +61,12 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Separate anchor elements for Profile and Mobile menus
   const [anchorElProfile, setAnchorElProfile] = useState<null | HTMLElement>(null);
   const [anchorElMobile, setAnchorElMobile] = useState<null | HTMLElement>(null);
 
   const openProfile = Boolean(anchorElProfile);
   const openMobile = Boolean(anchorElMobile);
 
-  // Handlers for Profile Menu
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElProfile(event.currentTarget);
     setAnchorElMobile(null);
@@ -40,7 +76,6 @@ const Navbar: React.FC = () => {
     setAnchorElProfile(null);
   };
 
-  // Handlers for Mobile Menu
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElMobile(event.currentTarget);
     setAnchorElProfile(null);
@@ -50,14 +85,26 @@ const Navbar: React.FC = () => {
     setAnchorElMobile(null);
   };
 
-  // Logout Handler
   const handleLogout = () => {
     logout();
     handleProfileMenuClose();
     navigate('/login');
+    toast.info('Logged out successfully');
   };
 
-  // Determine which buttons to show based on user role
+  const { getTotalItems } = useCart();
+
+  const [cartOpen, setCartOpen] = useState<boolean>(false);
+
+  const handleCartOpen = () => {
+    setCartOpen(true);
+  };
+
+  const handleCartClose = () => {
+    setCartOpen(false);
+  };
+
+
   const renderRoleBasedButtons = () => {
     if (!user) return null;
 
@@ -66,65 +113,13 @@ const Navbar: React.FC = () => {
     return (
       <>
         {/* Order Button - Visible when logged in */}
-        <Button
-          component={RouterLink}
-          to="/order"
-          color="inherit"
-          sx={{
-            fontFamily: 'League Spartan, sans-serif',
-            fontWeight: 'bold',
-            textTransform: 'none',
-            mr: 2,
-            '&:hover': {
-              color: 'primary.main',
-            },
-            transition: 'color 0.3s ease',
-          }}
-        >
-          Order
-        </Button>
+        <NavButton to="/order" label="Order" />
 
         {/* Dashboard Button - Visible for STAFF and ADMIN */}
-        {(role === 'STAFF' || role === 'ADMIN') && (
-          <Button
-            component={RouterLink}
-            to="/dashboard"
-            color="inherit"
-            sx={{
-              fontFamily: 'League Spartan, sans-serif',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              mr: 2,
-              '&:hover': {
-                color: 'primary.main',
-              },
-              transition: 'color 0.3s ease',
-            }}
-          >
-            Dashboard
-          </Button>
-        )}
+        {(role === 'STAFF' || role === 'ADMIN') && <NavButton to="/dashboard" label="Dashboard" />}
 
         {/* Admin Button - Visible only for ADMIN */}
-        {role === 'ADMIN' && (
-          <Button
-            component={RouterLink}
-            to="/admin"
-            color="inherit"
-            sx={{
-              fontFamily: 'League Spartan, sans-serif',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              mr: 2,
-              '&:hover': {
-                color: 'primary.main',
-              },
-              transition: 'color 0.3s ease',
-            }}
-          >
-            Admin
-          </Button>
-        )}
+        {role === 'ADMIN' && <NavButton to="/admin" label="Admin" />}
       </>
     );
   };
@@ -163,60 +158,9 @@ const Navbar: React.FC = () => {
 
         {/* Navigation Links for Desktop */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-          <Button
-            component={RouterLink}
-            to="/home"
-            color="inherit"
-            sx={{
-              fontFamily: 'League Spartan, sans-serif',
-              fontWeight: isActive('/home') ? 'bold' : 'normal',
-              textTransform: 'none',
-              mr: 2,
-              color: isActive('/home') ? 'primary.main' : 'inherit',
-              '&:hover': {
-                color: 'primary.main',
-              },
-              transition: 'color 0.3s ease, font-weight 0.3s ease',
-            }}
-          >
-            Home
-          </Button>
-          <Button
-            component={RouterLink}
-            to="/menu"
-            color="inherit"
-            sx={{
-              fontFamily: 'League Spartan, sans-serif',
-              fontWeight: isActive('/menu') ? 'bold' : 'normal',
-              textTransform: 'none',
-              mr: 2,
-              color: isActive('/menu') ? 'primary.main' : 'inherit',
-              '&:hover': {
-                color: 'primary.main',
-              },
-              transition: 'color 0.3s ease, font-weight 0.3s ease',
-            }}
-          >
-            Menu
-          </Button>
-          <Button
-            component={RouterLink}
-            to="/reservation"
-            color="inherit"
-            sx={{
-              fontFamily: 'League Spartan, sans-serif',
-              fontWeight: isActive('/reservation') ? 'bold' : 'normal',
-              textTransform: 'none',
-              mr: 2,
-              color: isActive('/reservation') ? 'primary.main' : 'inherit',
-              '&:hover': {
-                color: 'primary.main',
-              },
-              transition: 'color 0.3s ease, font-weight 0.3s ease',
-            }}
-          >
-            Reservation
-          </Button>
+          <NavButton to="/home" label="Home" />
+          <NavButton to="/menu" label="Menu" />
+          <NavButton to="/reservation" label="Reservation" />
 
           {/* Role-Based Buttons */}
           {renderRoleBasedButtons()}
@@ -240,6 +184,13 @@ const Navbar: React.FC = () => {
               Login
             </Button>
           )}
+
+          {/* Cart Icon */}
+          <IconButton color="inherit" onClick={handleCartOpen} sx={{ ml: 2 }}>
+            <Badge badgeContent={getTotalItems()} color="primary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
 
           {/* Profile Dropdown for Desktop */}
           {user && (
@@ -348,7 +299,7 @@ const Navbar: React.FC = () => {
               elevation: 0,
               sx: {
                 mt: '45px',
-                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 color: 'white',
                 fontFamily: 'League Spartan, sans-serif',
                 overflow: 'visible',
@@ -377,18 +328,18 @@ const Navbar: React.FC = () => {
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
             <MenuItem
-                onClick={handleLogout}
-                sx={{
+              onClick={handleLogout}
+              sx={{
                 fontFamily: 'League Spartan, sans-serif',
                 color: 'white',
                 '&:hover': {
-                    color: 'primary.main',
-                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  color: 'primary.main',
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
                 },
                 transition: 'color 0.3s ease, background-color 0.3s ease',
-                }}
+              }}
             >
-                Logout
+              Logout
             </MenuItem>
           </Menu>
         )}
@@ -466,7 +417,10 @@ const Navbar: React.FC = () => {
               component={RouterLink}
               to="/order"
               onClick={handleMobileMenuClose}
-              sx={{ fontFamily: 'League Spartan' }}
+              sx={{
+                fontFamily: 'League Spartan',
+                color: isActive('/order') ? 'primary.main' : 'inherit',
+              }}
             >
               Order
             </MenuItem>
@@ -475,7 +429,10 @@ const Navbar: React.FC = () => {
                 component={RouterLink}
                 to="/dashboard"
                 onClick={handleMobileMenuClose}
-                sx={{ fontFamily: 'League Spartan' }}
+                sx={{
+                  fontFamily: 'League Spartan',
+                  color: isActive('/dashboard') ? 'primary.main' : 'inherit',
+                }}
               >
                 Dashboard
               </MenuItem>
@@ -485,7 +442,10 @@ const Navbar: React.FC = () => {
                 component={RouterLink}
                 to="/admin"
                 onClick={handleMobileMenuClose}
-                sx={{ fontFamily: 'League Spartan' }}
+                sx={{
+                  fontFamily: 'League Spartan',
+                  color: isActive('/admin') ? 'primary.main' : 'inherit',
+                }}
               >
                 Admin
               </MenuItem>
@@ -493,7 +453,18 @@ const Navbar: React.FC = () => {
           </>
         )}
         {user ? (
-          <MenuItem onClick={handleLogout} sx={{ fontFamily: 'League Spartan' }}>
+          <MenuItem
+            onClick={handleLogout}
+            sx={{
+              fontFamily: 'League Spartan, sans-serif',
+              color: 'white',
+              '&:hover': {
+                color: 'primary.main',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              },
+              transition: 'color 0.3s ease, background-color 0.3s ease',
+            }}
+          >
             Logout
           </MenuItem>
         ) : (
@@ -507,6 +478,9 @@ const Navbar: React.FC = () => {
           </MenuItem>
         )}
       </Menu>
+
+      {/* Cart Drawer */}
+      <CartDrawer open={cartOpen} onClose={handleCartClose} />
     </AppBar>
   );
 };

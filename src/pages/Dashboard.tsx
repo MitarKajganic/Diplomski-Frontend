@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Container, List, ListItem, ListItemText, CircularProgress, Box, Alert } from '@mui/material';
 import api from '../services/api';
-import { Order } from '../types';
+import { OrderDto } from '../types/Interfaces';
 
 const Dashboard: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await api.get<Order[]>('/orders');
+        const response = await api.get<OrderDto[]>('/orders');
         setOrders(response.data);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to fetch orders.');
@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
             {orders.map((order) => (
               <ListItem key={order.id} divider>
                 <ListItemText
-                  primary={order.description}
+                  primary={order}
                   secondary={`Status: ${order.status}`}
                 />
               </ListItem>

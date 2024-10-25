@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
-import { LoginResponse } from '../../types';
+import { LoginResponse } from '../../types/Interfaces';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import '@fontsource/pacifico/400.css';

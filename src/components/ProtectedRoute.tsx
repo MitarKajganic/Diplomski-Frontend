@@ -10,7 +10,7 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
   const { token } = useContext(AuthContext);
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return children;

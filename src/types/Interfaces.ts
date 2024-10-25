@@ -1,5 +1,3 @@
-// Enums.ts
-
 export enum Method {
   CASH = 'CASH',
   CARD = 'CARD',
@@ -30,16 +28,6 @@ export enum Type {
   PAYMENT = 'PAYMENT',
   REFUND = 'REFUND',
 }
-
-// Interfaces.ts
-
-import {
-  Method,
-  Position,
-  Role,
-  Status,
-  Type,
-} from './Enums'; // Adjust the import path as necessary
 
 export interface LoginResponse {
   token: string;

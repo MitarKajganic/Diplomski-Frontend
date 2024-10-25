@@ -7,8 +7,10 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
+import Menu from './pages/Menu';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
+import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
@@ -25,7 +27,8 @@ const AnimatedRoutes: React.FC = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landing />} /> {/* Landing Page */}
         <Route path="/home" element={<Home />} /> {/* Home Page with Navbar */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
+        <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route
           path="/dashboard"
@@ -59,7 +62,7 @@ const AppContent: React.FC = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          zIndex: -3, // Ensure it's behind all other elements
+          zIndex: -3,
         }}
       />
 
@@ -75,10 +78,10 @@ const AppContent: React.FC = () => {
           width: '100%',
           height: '100%',
           backdropFilter: 'brightness(0.5) blur(8px)',
-          WebkitBackdropFilter: 'brightness(0.5) blur(8px)', // For Safari support
-          backgroundColor: 'rgba(0, 0, 0, 0)', // Transparent background
-          zIndex: -2, // Above the background image
-          pointerEvents: 'none', // Allow clicks to pass through
+          WebkitBackdropFilter: 'brightness(0.5) blur(8px)',
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          zIndex: -2,
+          pointerEvents: 'none',
         }}
       />
 
@@ -97,7 +100,9 @@ const AppContent: React.FC = () => {
       />
 
       {/* Animated Routes */}
-      <AnimatedRoutes />
+      <CartProvider>
+        <AnimatedRoutes />
+      </CartProvider>
     </>
   );
 };
@@ -111,7 +116,7 @@ const App: React.FC = () => {
       </Router>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
