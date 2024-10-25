@@ -1,4 +1,5 @@
 // src/pages/Checkout.tsx
+
 import React, { useState, useContext } from 'react';
 import {
     Box,
@@ -204,6 +205,9 @@ const Checkout: React.FC = () => {
             const bill: BillDto = await createBill(order.id);
             toast.success('Bill created successfully!');
 
+            // Update order.billId with the created bill's id
+            const updatedOrder: OrderDto = { ...order, billId: bill.id };
+
             // Prepare TransactionCreateDto
             const transactionPayload: TransactionCreateDto = {
                 amount: bill.finalAmount,
@@ -216,15 +220,15 @@ const Checkout: React.FC = () => {
             const transaction: TransactionDto = await createTransaction(transactionPayload);
             toast.success('Transaction recorded successfully!');
 
-            console.log('Order:', order);
+            console.log('Order:', updatedOrder);
             console.log('Bill:', bill);
             console.log('Transaction:', transaction);
 
             // Clear the cart after successful checkout
             clearCart();
 
-            // Navigate to Order Confirmation with order, bill, and transaction details
-            navigate('/order-confirmation', { state: { order, bill, transaction } });
+            // Navigate to Order Confirmation with orderId in URL and pass state
+            navigate(`/orders/${order.id}`, { state: { order: updatedOrder, bill, transaction } });
         } catch (error: any) {
             console.error('Checkout error:', error);
             toast.error('An error occurred during checkout. Please try again.');
@@ -638,6 +642,6 @@ const Checkout: React.FC = () => {
             </Box>
         </Box>
     );
-};
+}
 
 export default Checkout;

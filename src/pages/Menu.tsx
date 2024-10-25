@@ -35,7 +35,7 @@ const Menu: React.FC = () => {
   const { addToCart } = useCart();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation(); // Added to capture current location
+  const location = useLocation();
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -67,7 +67,6 @@ const Menu: React.FC = () => {
     fetchMenus();
   }, []);
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 1 } },
@@ -94,7 +93,7 @@ const Menu: React.FC = () => {
   };
 
   const handleLoginRedirect = () => {
-    navigate('/login', { state: { from: location } }); // Redirect to login with state
+    navigate('/login', { state: { from: location } });
   };
 
   return (

@@ -1,4 +1,5 @@
 // src/App.tsx
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -12,6 +13,8 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
+import Orders from './pages/Orders'; // Import Orders page
+import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
@@ -29,24 +32,35 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/" element={<Landing />} /> {/* Landing Page */}
         <Route path="/home" element={<Home />} /> {/* Home Page with Navbar */}
         <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
+        <Route path="/orders" element={<Orders />} /> {/* Orders Page */}
+        <Route path="/orders/:orderId" element={<OrderConfirmation />} /> {/* Order Confirmation with orderId */}
+        <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
-        <Route path="/dashboard" element={
+        <Route
+          path="/dashboard"
+          element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>} 
+            </ProtectedRoute>
+          }
         />
-        <Route path="/checkout" element={
+        <Route
+          path="/checkout"
+          element={
             <ProtectedRoute>
-              <Checkout /> 
-            </ProtectedRoute>} 
+              <Checkout />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/order-confirmation" element={
+        <Route
+          path="/order-confirmation"
+          element={
             <ProtectedRoute>
               <OrderConfirmation />
-            </ProtectedRoute>}
+            </ProtectedRoute>
+          }
         />
-        {/* Add more routes as needed */}
       </Routes>
     </AnimatePresence>
   );
