@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React from 'react';
 import { Box, Container, Typography, Button, Grid } from '@mui/material';
 import Navbar from '../components/Navbar';

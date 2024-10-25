@@ -18,7 +18,6 @@ const Home: React.FC = () => {
     navigate('/login');
   };
 
-  // Define animation variants
   const pageVariants = {
     initial: { opacity: 0, x: -50 },
     in: { opacity: 1, x: 0 },
@@ -88,7 +87,7 @@ const Home: React.FC = () => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2, // Space between links
+            gap: 2,
             width: { xs: '80%', sm: '60%', md: '40%' },
           }}
         >

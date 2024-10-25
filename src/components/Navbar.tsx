@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useContext, useState } from 'react';
 import {
   AppBar,
@@ -201,7 +200,7 @@ const Navbar: React.FC = () => {
                   elevation: 0,
                   sx: {
                     mt: '45px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Match navbar background
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     color: 'white',
                     fontFamily: 'League Spartan, sans-serif',
                     overflow: 'visible',
@@ -220,7 +219,7 @@ const Navbar: React.FC = () => {
                       right: 14,
                       width: 10,
                       height: 10,
-                      bgcolor: 'rgba(0, 0, 0, 0.7)', // Match navbar background
+                      bgcolor: 'rgba(0, 0, 0, 0.7)',
                       transform: 'translateY(-50%) rotate(45deg)',
                       zIndex: 0,
                     },

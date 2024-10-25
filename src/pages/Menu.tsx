@@ -1,4 +1,3 @@
-// src/pages/Menu.tsx
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
