@@ -10,7 +10,6 @@ import LoginPage from './pages/LoginPage';
 import Menu from './pages/Menu';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
-import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
@@ -100,9 +99,7 @@ const AppContent: React.FC = () => {
       />
 
       {/* Animated Routes */}
-      <CartProvider>
-        <AnimatedRoutes />
-      </CartProvider>
+      <AnimatedRoutes />
     </>
   );
 };

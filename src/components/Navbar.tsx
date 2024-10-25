@@ -21,7 +21,6 @@ import CartDrawer from './CartDrawer';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
 
-
 interface NavButtonProps {
   to: string;
   label: string;
@@ -88,7 +87,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     handleProfileMenuClose();
-    navigate('/login');
+    navigate('/');
     toast.info('Logged out successfully');
   };
 
@@ -103,7 +102,6 @@ const Navbar: React.FC = () => {
   const handleCartClose = () => {
     setCartOpen(false);
   };
-
 
   const renderRoleBasedButtons = () => {
     if (!user) return null;
@@ -166,31 +164,16 @@ const Navbar: React.FC = () => {
           {renderRoleBasedButtons()}
 
           {/* Login Button for Desktop (Visible when not logged in) */}
-          {!user && (
-            <Button
-              component={RouterLink}
-              to="/login"
-              color="inherit"
-              sx={{
-                fontFamily: 'League Spartan, sans-serif',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                '&:hover': {
-                  color: 'primary.main',
-                },
-                transition: 'color 0.3s ease',
-              }}
-            >
-              Login
-            </Button>
-          )}
+          {!user && <NavButton to="/login" label="Login" />}
 
-          {/* Cart Icon */}
-          <IconButton color="inherit" onClick={handleCartOpen} sx={{ ml: 2 }}>
-            <Badge badgeContent={getTotalItems()} color="primary">
-              <ShoppingCartIcon />
-            </Badge>
-          </IconButton>
+          {/* Cart Icon (Visible only when user is logged in) */}
+          {user && (
+            <IconButton color="inherit" onClick={handleCartOpen} sx={{ ml: 2 }}>
+              <Badge badgeContent={getTotalItems()} color="primary">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+          )}
 
           {/* Profile Dropdown for Desktop */}
           {user && (

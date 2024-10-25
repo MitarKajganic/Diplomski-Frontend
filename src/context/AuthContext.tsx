@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
 import { toast } from 'react-toastify';
+import { useCart } from './CartContext';
 
 export interface User {
   email: string;
@@ -30,6 +31,7 @@ interface Props {
 export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const { clearCart } = useCart();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('jwtToken');
@@ -86,10 +88,10 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    clearCart();
     localStorage.removeItem('jwtToken');
     delete api.defaults.headers.common['Authorization'];
     toast.info('Logged out successfully.');
-    // window.location.href = '/login';
   };
 
   return (
