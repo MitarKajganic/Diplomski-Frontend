@@ -13,7 +13,11 @@ const theme = createTheme({
     },
     background: {
       default: '#141414',
-      paper: 'rgba(255, 255, 255, 0.1)',
+      paper: 'rgba(64, 64, 64, 1)',
+    },
+    text: {
+      primary: '#FFFFFF', // Set primary text to white
+      secondary: 'rgba(255, 255, 255, 0.7)',
     },
   },
   typography: {
@@ -68,6 +72,17 @@ const theme = createTheme({
           backgroundColor: 'rgba(255, 0, 0, 0.2)',
           color: '#FFFFFF',
           fontFamily: 'League Spartan, sans-serif',
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#333333', // Dark gray background for the popover
+          opacity: 1,
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)',
+          borderRadius: '8px',
+          color: '#FFFFFF', // Set text color to white
         },
       },
     },

@@ -1,11 +1,15 @@
 // src/context/AuthContext.tsx
+
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
 import { toast } from 'react-toastify';
 import { useCart } from './CartContext';
+import { getUserByEmail } from '../services/reservationService'; // Import the service to fetch user by email
+import { UserDto } from '../types/Interfaces';
 
 export interface User {
+  id: string;
   email: string;
   role: string;
 }
@@ -34,14 +38,15 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('jwtToken');
-    if (storedToken) {
+    const fetchUser = async (storedToken: string) => {
       try {
         const decoded: any = jwtDecode(storedToken);
         if (decoded && decoded.sub && decoded.role && !isTokenExpired(decoded)) {
+          const fetchedUser: UserDto = await getUserByEmail(decoded.sub);
           setUser({
-            email: decoded.sub,
-            role: decoded.role,
+            id: fetchedUser.id,
+            email: fetchedUser.email,
+            role: fetchedUser.role,
           });
           setToken(storedToken);
           api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
@@ -55,6 +60,11 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         setToken(null);
         toast.error('Your session has expired. Please log in again.');
       }
+    };
+
+    const storedToken = localStorage.getItem('jwtToken');
+    if (storedToken) {
+      fetchUser(storedToken);
     }
   }, []);
 
@@ -65,24 +75,32 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   };
 
   const login = (newToken: string) => {
-    try {
-      const decoded: any = jwtDecode(newToken);
-      if (decoded && decoded.sub && decoded.role && !isTokenExpired(decoded)) {
-        setUser({
-          email: decoded.sub,
-          role: decoded.role,
-        });
-        setToken(newToken);
-        localStorage.setItem('jwtToken', newToken);
-        api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-        toast.success('Logged in successfully!');
-      } else {
-        throw new Error('Invalid or expired token');
+    const fetchAndSetUser = async () => {
+      try {
+        const decoded: any = jwtDecode(newToken);
+        if (decoded && decoded.sub && decoded.role && !isTokenExpired(decoded)) {
+          // Set token and save it to localStorage before fetching user
+          setToken(newToken);
+          localStorage.setItem('jwtToken', newToken);
+          api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+          const fetchedUser: UserDto = await getUserByEmail(decoded.sub);
+          setUser({
+            id: fetchedUser.id,
+            email: fetchedUser.email,
+            role: fetchedUser.role,
+          });
+          toast.success('Logged in successfully!');
+        } else {
+          throw new Error('Invalid or expired token');
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        toast.error('Failed to log in. Please try again.');
       }
-    } catch (error) {
-      console.error('Invalid token:', error);
-      toast.error('Failed to log in. Please try again.');
-    }
+    };
+
+    fetchAndSetUser();
   };
 
   const logout = () => {

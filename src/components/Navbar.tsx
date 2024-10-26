@@ -157,7 +157,7 @@ const Navbar: React.FC = () => {
         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
           <NavButton to="/home" label="Home" />
           <NavButton to="/menu" label="Menu" />
-          <NavButton to="/reservation" label="Reservation" />
+          <NavButton to="/reservations" label="Reservation" />
 
           {/* Role-Based Buttons */}
           {renderRoleBasedButtons()}

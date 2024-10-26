@@ -85,6 +85,16 @@ export interface ReservationDto {
   guestPhone: string | null;
 }
 
+export interface ReservationCreateDto {
+  tableId: string;
+  reservationTime: string; // ISO date string
+  numberOfGuests: number;
+  userId?: string;
+  guestName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+}
+
 export interface UserDto {
   id: string;
   email: string;
@@ -156,4 +166,3 @@ export interface TransactionCreateDto {
   billId: string;
 }
 
-// Add more interfaces as required

@@ -1,6 +1,4 @@
-// src/services/orderService.ts
-
-import api from './api'; // Ensure this is correctly configured
+import api from './api';
 import {
   UserDto,
   OrderCreateDto,

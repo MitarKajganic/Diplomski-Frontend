@@ -13,8 +13,10 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
-import Orders from './pages/Orders'; // Import Orders page
-import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
+import Orders from './pages/Orders';
+import Reservations from './pages/Reservations'; // Import Reservations page
+import ReservationConfirmation from './pages/ReservationConfirmation';
+import NotFoundPage from './pages/NotFoundPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
@@ -34,8 +36,10 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
         <Route path="/orders" element={<Orders />} /> {/* Orders Page */}
         <Route path="/orders/:orderId" element={<OrderConfirmation />} /> {/* Order Confirmation with orderId */}
-        <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
+        <Route path="/reservations" element={<Reservations />} /> {/* Reservations Page */}
+        <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} /> {/* Reservation Confirmation */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
+        <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route
           path="/dashboard"

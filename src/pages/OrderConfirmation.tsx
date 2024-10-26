@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   OrderDto,
   OrderItemDto,
@@ -33,7 +33,6 @@ import { toast } from 'react-toastify';
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { orderId } = useParams<{ orderId: string }>();
 
   const [order, setOrder] = useState<OrderDto | null>(null);
