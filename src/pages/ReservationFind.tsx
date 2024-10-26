@@ -262,7 +262,7 @@ const ReservationFind: React.FC = () => {
                 </Typography>
                 <Grid container spacing={3}>
                   {reservations.map((reservation) => (
-                    <Grid item xs={12} sm={6} md={4} key={reservation.id}>
+                    <Grid item xs={12} sm={6} md={6} key={reservation.id}>
                       <Card
                         sx={{
                           backgroundColor: 'rgba(255, 255, 255, 0.1)',
