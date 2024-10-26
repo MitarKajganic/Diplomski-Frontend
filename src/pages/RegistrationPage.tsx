@@ -81,7 +81,7 @@ const RegistrationPage: React.FC = () => {
           {/* <OAuth2RegistrationButton /> */}
 
           {/* Redirect to Login */}
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ alignSelf: 'flex-start' }}>
             <Typography variant="body2" sx={{ fontFamily: 'League Spartan, sans-serif', color: 'rgba(255, 255, 255, 0.8)' }}>
               Already have an account?{' '}
               <Link component={RouterLink} to="/login" sx={{ color: 'primary.main', fontWeight: 'bold' }}>

@@ -1,5 +1,3 @@
-// src/pages/LoginPage.tsx
-
 import React from 'react';
 import LoginForm from '../components/auth/LoginForm';
 import OAuth2LoginButton from '../components/auth/OAuth2LoginButton';
@@ -77,6 +75,16 @@ const LoginPage: React.FC = () => {
           {/* Login Form */}
           <LoginForm />
 
+          {/* Redirect to Registration */}
+          <Box sx={{ alignSelf: 'flex-start' }}>
+            <Typography variant="body2" sx={{ fontFamily: 'League Spartan, sans-serif', color: 'rgba(255, 255, 255, 0.8)' }}>
+              Don't have an account?{' '}
+              <Link component={RouterLink} to="/register" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                Register here
+              </Link>
+            </Typography>
+          </Box>
+
           {/* "OR" Divider */}
           <Divider sx={{ width: '100%', my: 3, borderColor: 'white' }}>
             <Typography
@@ -93,16 +101,6 @@ const LoginPage: React.FC = () => {
 
           {/* OAuth2 Login Button */}
           <OAuth2LoginButton />
-
-          {/* Redirect to Registration */}
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" sx={{ fontFamily: 'League Spartan, sans-serif', color: 'rgba(255, 255, 255, 0.8)' }}>
-              Don't have an account?{' '}
-              <Link component={RouterLink} to="/register" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                Register here
-              </Link>
-            </Typography>
-          </Box>
         </Box>
       </Container>
     </motion.div>
