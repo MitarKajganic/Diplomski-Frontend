@@ -6,6 +6,7 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
 import Menu from './pages/Menu';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
@@ -41,6 +42,7 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} /> {/* Reservation Confirmation */}
         <Route path="/user-reservations" element={<UserReservations />} /> {/* User Reservations Page */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
+        <Route path="/register" element={<RegistrationPage />} /> {/* Registration Page */}
         <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route
@@ -75,6 +77,7 @@ const AnimatedRoutes: React.FC = () => {
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isRegistration = location.pathname === '/register';
   const isLandingPage = location.pathname === '/';
 
   return (
@@ -97,7 +100,7 @@ const AppContent: React.FC = () => {
       {/* Blur Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: isLoginPage ? 1 : 0 }}
+        animate={{ opacity: isLoginPage || isRegistration ? 1 : 0 }}
         transition={{ duration: 0.5 }}
         style={{
           position: 'fixed',

@@ -30,7 +30,7 @@ const UserReservations: React.FC = () => {
   const [reservations, setReservations] = useState<EnhancedReservation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<ApiError | null>(null);
-  const [tablesMap, setTablesMap] = useState<Map<string, TableDto>>(new Map());
+  const [, setTablesMap] = useState<Map<string, TableDto>>(new Map());
 
   useEffect(() => {
     const fetchUserReservations = async () => {

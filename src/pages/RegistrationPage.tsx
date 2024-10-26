@@ -1,15 +1,14 @@
-// src/pages/LoginPage.tsx
+// src/pages/RegistrationPage.tsx
 
 import React from 'react';
-import LoginForm from '../components/auth/LoginForm';
-import OAuth2LoginButton from '../components/auth/OAuth2LoginButton';
-import { Container, Divider, Typography, Box, Link } from '@mui/material';
+import RegistrationForm from '../components/auth/RegistrationForm';
+import { Container, Typography, Box, Link } from '@mui/material';
 import '@fontsource/pacifico/400.css';
 import '@fontsource/league-spartan/400.css';
 import { motion } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom'; // Import RouterLink
+import { Link as RouterLink } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
+const RegistrationPage: React.FC = () => {
   const pageVariants = {
     initial: { opacity: 0, x: 50 },
     in: { opacity: 1, x: 0 },
@@ -58,7 +57,7 @@ const LoginPage: React.FC = () => {
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
           }}
         >
-          {/* "Sign In" Heading */}
+          {/* "Register" Heading */}
           <Typography
             component="h1"
             variant="h4"
@@ -71,35 +70,22 @@ const LoginPage: React.FC = () => {
               mb: 2,
             }}
           >
-            Sign In
+            Register
           </Typography>
 
-          {/* Login Form */}
-          <LoginForm />
+          {/* Registration Form */}
+          <RegistrationForm />
 
-          {/* "OR" Divider */}
-          <Divider sx={{ width: '100%', my: 3, borderColor: 'white' }}>
-            <Typography
-              variant="body1"
-              sx={{
-                fontFamily: 'League Spartan, sans-serif',
-                color: 'rgba(255, 255, 255, 0.7)',
-                paddingX: 2,
-              }}
-            >
-              OR
-            </Typography>
-          </Divider>
+          {/* OAuth2 Registration Button */}
+          {/* If you have OAuth2 registration similar to login, you can include it here */}
+          {/* <OAuth2RegistrationButton /> */}
 
-          {/* OAuth2 Login Button */}
-          <OAuth2LoginButton />
-
-          {/* Redirect to Registration */}
+          {/* Redirect to Login */}
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" sx={{ fontFamily: 'League Spartan, sans-serif', color: 'rgba(255, 255, 255, 0.8)' }}>
-              Don't have an account?{' '}
-              <Link component={RouterLink} to="/register" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                Register here
+              Already have an account?{' '}
+              <Link component={RouterLink} to="/login" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                Sign In
               </Link>
             </Typography>
           </Box>
@@ -109,4 +95,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegistrationPage;
