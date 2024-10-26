@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '@fontsource/pacifico/400.css';
 import '@fontsource/league-spartan/400.css';
 import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { motion } from 'framer-motion';
+import { AuthContext } from '../context/AuthContext';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
 
   const handleEnter = () => {
     navigate('/home');
@@ -16,6 +19,11 @@ const Home: React.FC = () => {
 
   const handleLogin = () => {
     navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const pageVariants = {
@@ -115,29 +123,55 @@ const Home: React.FC = () => {
             Enter
           </Link>
 
-          <Link
-            component="button"
-            variant="h6"
-            onClick={handleLogin}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'primary.main',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-              '&:hover': {
-                color: 'secondary.main',
-                textDecoration: 'underline',
-              },
-              transition: 'color 0.3s ease, text-decoration 0.3s ease',
-            }}
-          >
-            <LoginIcon sx={{ mr: 1 }} />
-            Login
-          </Link>
+          {user ? (
+            <Link
+              component="button"
+              variant="h6"
+              onClick={handleLogout}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'primary.main',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                '&:hover': {
+                  color: 'secondary.main',
+                  textDecoration: 'underline',
+                },
+                transition: 'color 0.3s ease, text-decoration 0.3s ease',
+              }}
+            >
+              <LogoutIcon sx={{ mr: 1 }} />
+              Logout
+            </Link>
+          ) : (
+            <Link
+              component="button"
+              variant="h6"
+              onClick={handleLogin}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'primary.main',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                '&:hover': {
+                  color: 'secondary.main',
+                  textDecoration: 'underline',
+                },
+                transition: 'color 0.3s ease, text-decoration 0.3s ease',
+              }}
+            >
+              <LoginIcon sx={{ mr: 1 }} />
+              Login
+            </Link>
+          )}
         </Box>
       </Box>
     </motion.div>
