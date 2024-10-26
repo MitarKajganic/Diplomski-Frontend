@@ -522,13 +522,13 @@ const Reservations: React.FC = () => {
                             : selectedTable === table.id
                             ? 'rgba(255, 0, 0, 1)'
                             : [1, 2, 3, 4].includes(table.tableNumber)
-                            ? 'rgba(0, 0, 0, 1)'
+                            ? 'rgba(27, 31, 32, 1)'
                             : 'transparent',
                         border:
                           !table.isAvailable
                             ? '2px solid rgba(128, 128, 128, 1)'
                             : [1, 2, 3, 4].includes(table.tableNumber)
-                            ? '2px solid rgba(0, 0, 0, 1)'
+                            ? '2px solid rgba(255, 255, 255, 0.5)'
                             : '2px solid rgba(255, 255, 255, 0.5)',
                         zIndex: 1,
                       }}
