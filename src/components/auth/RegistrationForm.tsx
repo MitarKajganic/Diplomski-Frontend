@@ -30,19 +30,16 @@ const onSubmit: SubmitHandler<RegistrationFormInputs> = async (data) => {
     setLoading(true);
     setServerError(null);
     try {
-        // Call your registration API endpoint
         await api.post('/users/create', {
             email: data.email,
             password: data.password,
         });
 
-        // Call the login API endpoint
         const response = await api.post('/api/auth/login', {
             email: data.email,
             password: data.password,
         });
 
-        // Log the user in
         const { token } = response.data as { token: string };
         login(token);
         navigate('/home');
@@ -54,7 +51,6 @@ const onSubmit: SubmitHandler<RegistrationFormInputs> = async (data) => {
     }
 };
 
-  // Watch password field to validate confirm password
   const password = watch('password', '');
 
   return (

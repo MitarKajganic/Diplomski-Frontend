@@ -1,5 +1,3 @@
-// src/pages/RegistrationPage.tsx
-
 import React from 'react';
 import RegistrationForm from '../components/auth/RegistrationForm';
 import { Container, Typography, Box, Link } from '@mui/material';
@@ -75,10 +73,6 @@ const RegistrationPage: React.FC = () => {
 
           {/* Registration Form */}
           <RegistrationForm />
-
-          {/* OAuth2 Registration Button */}
-          {/* If you have OAuth2 registration similar to login, you can include it here */}
-          {/* <OAuth2RegistrationButton /> */}
 
           {/* Redirect to Login */}
           <Box sx={{ alignSelf: 'flex-start' }}>

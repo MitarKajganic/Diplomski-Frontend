@@ -5,7 +5,7 @@ import { Container, Divider, Typography, Box, Link } from '@mui/material';
 import '@fontsource/pacifico/400.css';
 import '@fontsource/league-spartan/400.css';
 import { motion } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom'; // Import RouterLink
+import { Link as RouterLink } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
   const pageVariants = {

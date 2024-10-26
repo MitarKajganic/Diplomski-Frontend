@@ -1,11 +1,9 @@
-// src/context/AuthContext.tsx
-
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
 import { toast } from 'react-toastify';
 import { useCart } from './CartContext';
-import { getUserByEmail } from '../services/reservationService'; // Import the service to fetch user by email
+import { getUserByEmail } from '../services/reservationService';
 import { UserDto } from '../types/Interfaces';
 
 export interface User {
@@ -79,7 +77,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       try {
         const decoded: any = jwtDecode(newToken);
         if (decoded && decoded.sub && decoded.role && !isTokenExpired(decoded)) {
-          // Set token and save it to localStorage before fetching user
           setToken(newToken);
           localStorage.setItem('jwtToken', newToken);
           api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;

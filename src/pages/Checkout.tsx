@@ -1,5 +1,3 @@
-// src/pages/Checkout.tsx
-
 import React, { useState, useContext } from 'react';
 import {
     Box,
@@ -48,7 +46,6 @@ const Checkout: React.FC = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // State for Delivery Information
     const [deliveryInfo, setDeliveryInfo] = useState({
         firstName: '',
         lastName: '',
@@ -58,7 +55,6 @@ const Checkout: React.FC = () => {
         phoneNumber: '',
     });
 
-    // State for Payment Information
     const [paymentInfo, setPaymentInfo] = useState({
         cardNumber: '',
         expirationDate: '',
@@ -66,42 +62,35 @@ const Checkout: React.FC = () => {
         cardHolderName: '',
     });
 
-    // State for Payment Method
     const [paymentMethod, setPaymentMethod] = useState<'Card' | 'Cash'>('Card');
 
     const [loading, setLoading] = useState<boolean>(false);
 
-    // Handler for Delivery Information Change
     const handleDeliveryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value });
     };
 
-    // Handler for Payment Information Change
     const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaymentInfo({ ...paymentInfo, [e.target.name]: e.target.value });
     };
 
-    // Handler for Payment Method Change
     const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaymentMethod(e.target.value as 'Card' | 'Cash');
     };
 
-    // Validation Functions
     const validateCardNumber = (number: string): boolean => {
-        // Simple regex for 16-digit card numbers
         const regex = /^\d{16}$/;
         return regex.test(number);
     };
 
     const validateExpirationDate = (date: string): boolean => {
-        // MM/YY format
         const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
         if (!regex.test(date)) return false;
 
         const [month, year] = date.split('/').map(Number);
         const currentDate = new Date();
-        const currentYear = currentDate.getFullYear() % 100; // Get last two digits
-        const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed
+        const currentYear = currentDate.getFullYear() % 100;
+        const currentMonth = currentDate.getMonth() + 1;
 
         if (year < currentYear) return false;
         if (year === currentYear && month < currentMonth) return false;
@@ -115,17 +104,14 @@ const Checkout: React.FC = () => {
     };
 
     const validatePhoneNumber = (phone: string): boolean => {
-        // Adjusted to allow between 8 to 11 digits based on your regex
         const regex = /^\d{8,11}$/;
         return regex.test(phone);
     };
 
     const handleCheckout = async () => {
-        // Destructure Delivery and Payment Info
         const { firstName, lastName, street, number, floor, phoneNumber } = deliveryInfo;
         const { cardNumber, expirationDate, cvv, cardHolderName } = paymentInfo;
 
-        // Basic Validation
         if (
             !firstName ||
             !lastName ||
@@ -139,13 +125,11 @@ const Checkout: React.FC = () => {
             return;
         }
 
-        // Validate Phone Number
         if (!validatePhoneNumber(phoneNumber)) {
             toast.error('Please enter a valid phone number (8-11 digits).');
             return;
         }
 
-        // If Payment Method is Card, validate card details
         if (paymentMethod === 'Card') {
             if (!validateCardNumber(cardNumber)) {
                 toast.error('Please enter a valid 16-digit card number.');
@@ -172,17 +156,14 @@ const Checkout: React.FC = () => {
                 return;
             }
 
-            // Fetch user data to get userId
             const fetchedUser: UserDto = await getUserByEmail(user.email);
             const userId = fetchedUser.id;
 
-            // Prepare menuItemIdsAndQuantities
             const menuItemIdsAndQuantities: { [key: string]: number } = {};
             cartItems.forEach((item: CartItem) => {
                 menuItemIdsAndQuantities[item.id] = item.quantity;
             });
 
-            // Prepare OrderCreateDto
             const orderPayload: OrderCreateDto = {
                 status: Status.PENDING,
                 userId: userId,
@@ -197,18 +178,14 @@ const Checkout: React.FC = () => {
                 },
             };
 
-            // Create Order
             const order: OrderDto = await createOrder(orderPayload);
             toast.success('Order created successfully!');
 
-            // Create Bill
             const bill: BillDto = await createBill(order.id);
             toast.success('Bill created successfully!');
 
-            // Update order.billId with the created bill's id
             const updatedOrder: OrderDto = { ...order, billId: bill.id };
 
-            // Prepare TransactionCreateDto
             const transactionPayload: TransactionCreateDto = {
                 amount: bill.finalAmount,
                 type: Type.PAYMENT,
@@ -216,7 +193,6 @@ const Checkout: React.FC = () => {
                 billId: bill.id,
             };
 
-            // Create Transaction
             const transaction: TransactionDto = await createTransaction(transactionPayload);
             toast.success('Transaction recorded successfully!');
 
@@ -224,10 +200,8 @@ const Checkout: React.FC = () => {
             console.log('Bill:', bill);
             console.log('Transaction:', transaction);
 
-            // Clear the cart after successful checkout
             clearCart();
 
-            // Navigate to Order Confirmation with orderId in URL and pass state
             navigate(`/orders/${order.id}`, { state: { order: updatedOrder, bill, transaction } });
         } catch (error: any) {
             console.error('Checkout error:', error);
@@ -446,7 +420,7 @@ const Checkout: React.FC = () => {
                                         InputLabelProps={{ style: { color: '#ffffff' } }}
                                         InputProps={{
                                             style: { color: '#ffffff', borderColor: '#ffffff' },
-                                            inputProps: { maxLength: 11 }, // Adjusted based on your validation
+                                            inputProps: { maxLength: 11 },
                                         }}
                                         helperText="Enter phone number (8-11 digits)"
                                         sx={{

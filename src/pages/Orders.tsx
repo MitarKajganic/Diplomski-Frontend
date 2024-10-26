@@ -1,5 +1,3 @@
-// src/pages/Orders.tsx
-
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
@@ -71,12 +69,10 @@ const Orders: React.FC = () => {
     fetchOrders();
   }, [user, navigate]);
 
-  // Helper function to calculate total price of an order
   const calculateTotalPrice = (orderItems: OrderItemDto[]): number => {
     return orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  // Helper function to get status icon
   const getStatusIcon = (status: string) => {
     switch (status.toUpperCase()) {
       case 'COMPLETED':
@@ -115,7 +111,7 @@ const Orders: React.FC = () => {
         flexDirection: 'column',
         minHeight: '100vh',
         position: 'relative',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Optional: Match your theme
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         color: '#ffffff',
       }}
     >

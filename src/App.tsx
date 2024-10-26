@@ -125,7 +125,7 @@ const AppContent: React.FC = () => {
           width: '100%',
           height: '100%',
           backgroundColor: isLandingPage ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)',
-          zIndex: -1, // Above the blur overlay
+          zIndex: -1,
           transition: 'background-color 0.3s ease',
         }}
       />

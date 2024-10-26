@@ -1,5 +1,3 @@
-// src/pages/OrderConfirmation.tsx
-
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -50,16 +48,13 @@ const OrderConfirmation: React.FC = () => {
       }
 
       try {
-        // Fetch Order
         const fetchedOrder = await getOrderById(orderId);
         setOrder(fetchedOrder);
 
-        // Fetch Bill
         if (fetchedOrder.billId) {
           const fetchedBill = await getBillById(fetchedOrder.billId);
           setBill(fetchedBill);
 
-          // Fetch Transactions
           const fetchedTransactions = await getTransactionsByBillId(fetchedBill.id);
           setTransactions(fetchedTransactions);
         } else {
@@ -185,7 +180,7 @@ const OrderConfirmation: React.FC = () => {
   }
 
   if (!order || !bill) {
-    return null; // Should not happen, but just in case
+    return null;
   }
 
   return (
@@ -329,7 +324,7 @@ const OrderConfirmation: React.FC = () => {
                         secondary={`Price per Unit: $${(item.price / item.quantity).toFixed(
                           2
                         )} | Subtotal: $${item.price.toFixed(2)}`}
-                        secondaryTypographyProps={{ color: '#ffffff' }} // Set to desired color
+                        secondaryTypographyProps={{ color: '#ffffff' }}
                       />
                     </ListItem>
                   ))}
