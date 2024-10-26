@@ -1,104 +1,184 @@
 import api from './api';
 import {
-  ReservationDto,
-  TableDto,
-  UserDto,
-  ReservationCreateDto,
+    ReservationDto,
+    TableDto,
+    UserDto,
+    ReservationCreateDto,
 } from '../types/Interfaces';
 
 /**
  * Fetches all tables from the backend.
  */
 export const getAllTables = async (): Promise<TableDto[]> => {
-  try {
-    const response = await api.get<TableDto[]>('/tables');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching tables:', error);
-    throw error;
-  }
+    try {
+        const response = await api.get<TableDto[]>('/tables');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching tables:', error);
+        throw error;
+    }
 };
 
 /**
- * Retrieves tables on Floor 1 (Table Numbers 1-4).
+ * Fetch table by table ID.
  */
-export const getTablesFloor1 = async (): Promise<TableDto[]> => {
-  try {
-    const allTables = await getAllTables();
-    return allTables.filter((table) => table.tableNumber >= 1 && table.tableNumber <= 4);
-  } catch (error) {
-    console.error('Error fetching Floor 1 tables:', error);
-    throw error;
-  }
-};
-
-/**
- * Retrieves tables on Floor 2 (Table Numbers 5-16).
- */
-export const getTablesFloor2 = async (): Promise<TableDto[]> => {
-  try {
-    const allTables = await getAllTables();
-    return allTables.filter((table) => table.tableNumber >= 5 && table.tableNumber <= 16);
-  } catch (error) {
-    console.error('Error fetching Floor 2 tables:', error);
-    throw error;
-  }
+export const getTableByTableId = async (
+    tableId: string
+): Promise<TableDto> => {
+    try {
+        const response = await api.get<TableDto>(`/tables/${tableId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching table by table ID:', error);
+        throw error;
+    }
 };
 
 /**
  * Fetch reservations by user ID.
  */
 export const getReservationsByUserId = async (
-  userId: string
+    userId: string
 ): Promise<ReservationDto[]> => {
-  try {
-    const response = await api.get<ReservationDto[]>(`/reservations/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching reservations by user ID:', error);
-    throw error;
-  }
+    try {
+        const response = await api.get<ReservationDto[]>(`/reservations/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching reservations by user ID:', error);
+        throw error;
+    }
 };
 
 /**
  * Create a new reservation.
  */
 export const createReservation = async (
-  reservationData: ReservationCreateDto
+    reservationData: ReservationCreateDto
 ): Promise<ReservationDto> => {
-  try {
-    const response = await api.post<ReservationDto>('/reservations', reservationData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating reservation:', error);
-    throw error;
-  }
+    try {
+        const response = await api.post<ReservationDto>('/reservations', reservationData);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating reservation:', error);
+        throw error;
+    }
 };
 
 /**
  * Fetch reservation details by reservation ID.
  */
 export const getReservationById = async (
-  reservationId: string
+    reservationId: string
 ): Promise<ReservationDto> => {
-  try {
-    const response = await api.get<ReservationDto>(`/reservations/${reservationId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching reservation details:', error);
-    throw error;
-  }
+    try {
+        const response = await api.get<ReservationDto>(`/reservations/${reservationId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching reservation details:', error);
+        throw error;
+    }
 };
 
 /**
  * Fetch user details by email.
  */
 export const getUserByEmail = async (email: string): Promise<UserDto> => {
-  try {
-    const response = await api.get<UserDto>(`/users/email/${email}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching user by email:', error);
-    throw error;
-  }
+    try {
+        const response = await api.get<UserDto>(`/users/email/${email}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user by email:', error);
+        throw error;
+    }
+};
+
+/**
+ * Find reservation by guest name
+ */
+export const findReservationByGuestName = async (guestName: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/guest-name/${encodeURIComponent(guestName)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error finding reservation by guest name:', error);
+        throw error;
+    }
+};
+
+/**
+ * Find reservation by guest email
+ */
+export const findReservationByGuestEmail = async (guestEmail: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/guest-email/${encodeURIComponent(guestEmail)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error finding reservation by guest email:', error);
+        throw error;
+    }
+};
+
+/**
+ * Find reservation by guest phone
+ */
+export const findReservationByGuestPhone = async (guestPhone: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/guest-phone/${encodeURIComponent(guestPhone)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error finding reservation by guest phone:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch all reservations.
+ */
+export const getAllReservations = async (): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>('/reservations');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all reservations:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch reservations by guest phone.
+ */
+export const getReservationsByGuestPhone = async (guestPhone: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/reservations/guest-phone/${encodeURIComponent(guestPhone)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching reservations by guest phone:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch reservations by guest email.
+ */
+export const getReservationsByGuestEmail = async (guestEmail: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/reservations/guest-email/${encodeURIComponent(guestEmail)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching reservations by guest email:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch reservations by guest name.
+ */
+export const getReservationsByGuestName = async (guestName: string): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>(`/reservations/guest-name/${encodeURIComponent(guestName)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching reservations by guest name:', error);
+        throw error;
+    }
 };

@@ -1,5 +1,3 @@
-// src/App.tsx
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -14,8 +12,10 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import OAuth2Callback from './pages/OAuth2Callback';
 import ProtectedRoute from './components/ProtectedRoute';
 import Orders from './pages/Orders';
-import Reservations from './pages/Reservations'; // Import Reservations page
+import Reservations from './pages/ReservationsCreate';
 import ReservationConfirmation from './pages/ReservationConfirmation';
+import UserReservations from './pages/UserReservations';
+import ReservationFind from './pages/ReservationFind';
 import NotFoundPage from './pages/NotFoundPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -36,8 +36,10 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
         <Route path="/orders" element={<Orders />} /> {/* Orders Page */}
         <Route path="/orders/:orderId" element={<OrderConfirmation />} /> {/* Order Confirmation with orderId */}
-        <Route path="/reservations" element={<Reservations />} /> {/* Reservations Page */}
+        <Route path="/reservations/create" element={<Reservations />} /> {/* Reservations Page */}
+        <Route path="/reservations/find" element={<ReservationFind />} /> {/* Find Reservation Page */}
         <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} /> {/* Reservation Confirmation */}
+        <Route path="/user-reservations" element={<UserReservations />} /> {/* User Reservations Page */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
         <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />

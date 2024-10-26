@@ -11,6 +11,7 @@ import {
   Tooltip,
   Avatar,
   Badge,
+  ListItemIcon,
 } from '@mui/material';
 import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -19,6 +20,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CartDrawer from './CartDrawer';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import CreateIcon from '@mui/icons-material/Create';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface NavButtonProps {
   to: string;
@@ -61,12 +65,21 @@ const Navbar: React.FC = () => {
 
   const [anchorElProfile, setAnchorElProfile] = useState<null | HTMLElement>(null);
   const [anchorElMobile, setAnchorElMobile] = useState<null | HTMLElement>(null);
+  const [anchorElReservation, setAnchorElReservation] = useState<null | HTMLElement>(null);
 
   const openProfile = Boolean(anchorElProfile);
   const openMobile = Boolean(anchorElMobile);
+  const openReservation = Boolean(anchorElReservation);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElProfile(event.currentTarget);
+    setAnchorElMobile(null);
+    setAnchorElReservation(null);
+  };
+
+  const handleReservationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElReservation(event.currentTarget);
+    setAnchorElProfile(null);
     setAnchorElMobile(null);
   };
 
@@ -74,9 +87,14 @@ const Navbar: React.FC = () => {
     setAnchorElProfile(null);
   };
 
+  const handleReservationMenuClose = () => {
+    setAnchorElReservation(null);
+  };
+
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElMobile(event.currentTarget);
     setAnchorElProfile(null);
+    setAnchorElReservation(null);
   };
 
   const handleMobileMenuClose = () => {
@@ -121,6 +139,61 @@ const Navbar: React.FC = () => {
     );
   };
 
+  const renderReservationMenu = () => (
+    <Menu
+      anchorEl={anchorElReservation}
+      open={openReservation}
+      onClose={handleReservationMenuClose}
+      MenuListProps={{
+        'aria-labelledby': 'reservation-button',
+      }}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+    >
+      <MenuItem
+        component={RouterLink}
+        to="/reservations/create"
+        onClick={handleReservationMenuClose}
+        sx={{ fontFamily: 'League Spartan, sans-serif', color: 'white' }}
+      >
+        <ListItemIcon>
+          <CreateIcon fontSize="small" sx={{ color: 'white' }} />
+        </ListItemIcon>
+        Create
+      </MenuItem>
+      <MenuItem
+        component={RouterLink}
+        to="/reservations/find"
+        onClick={handleReservationMenuClose}
+        sx={{ fontFamily: 'League Spartan, sans-serif', color: 'white' }}
+      >
+        <ListItemIcon>
+          <SearchIcon fontSize="small" sx={{ color: 'white' }} />
+        </ListItemIcon>
+        Find
+      </MenuItem>
+      {user && (
+        <MenuItem
+          component={RouterLink}
+          to="/user-reservations"
+          onClick={handleReservationMenuClose}
+          sx={{ fontFamily: 'League Spartan, sans-serif', color: 'white' }}
+        >
+          <ListItemIcon>
+            <EventNoteIcon fontSize="small" sx={{ color: 'white' }} />
+          </ListItemIcon>
+          My Reservations
+        </MenuItem>
+      )}
+    </Menu>
+  );
+
   return (
     <AppBar
       position="fixed"
@@ -157,9 +230,31 @@ const Navbar: React.FC = () => {
         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
           <NavButton to="/home" label="Home" />
           <NavButton to="/menu" label="Menu" />
-          <NavButton to="/reservations" label="Reservation" />
 
-          {/* Role-Based Buttons */}
+          {/* Reservation Dropdown */}
+          <Button
+            id="reservation-button"
+            aria-controls={openReservation ? 'reservation-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={openReservation ? 'true' : undefined}
+            onClick={handleReservationMenuOpen}
+            color="inherit"
+            sx={{
+              fontFamily: 'League Spartan, sans-serif',
+              textTransform: 'none',
+              mr: 2,
+              color: 'inherit',
+              fontWeight: openReservation ? 'bold' : 'normal',
+              '&:hover': {
+                color: 'primary.main',
+              },
+              transition: 'color 0.3s ease, font-weight 0.3s ease',
+            }}
+          >
+            Reservation
+          </Button>
+
+          {/* Render Role-Based Buttons */}
           {renderRoleBasedButtons()}
 
           {/* Login Button for Desktop (Visible when not logged in) */}
@@ -327,6 +422,9 @@ const Navbar: React.FC = () => {
         )}
       </Toolbar>
 
+      {/* Reservation Dropdown Menu */}
+      {renderReservationMenu()}
+
       {/* Mobile Navigation Menu */}
       <Menu
         id="mobile-menu"
@@ -385,26 +483,25 @@ const Navbar: React.FC = () => {
         >
           Menu
         </MenuItem>
-        <MenuItem
-          component={RouterLink}
-          to="/reservation"
-          onClick={handleMobileMenuClose}
-          sx={{ fontFamily: 'League Spartan', color: isActive('/reservation') ? 'primary.main' : 'inherit' }}
-        >
+
+        {/* Reservation Dropdown for Mobile */}
+        <MenuItem onClick={handleReservationMenuOpen} sx={{ fontFamily: 'League Spartan', color: 'inherit' }}>
           Reservation
         </MenuItem>
+
+        {/* Render Role-Based Buttons */}
         {user && (
           <>
             <MenuItem
               component={RouterLink}
-              to="/order"
+              to="/orders"
               onClick={handleMobileMenuClose}
               sx={{
                 fontFamily: 'League Spartan',
-                color: isActive('/order') ? 'primary.main' : 'inherit',
+                color: isActive('/orders') ? 'primary.main' : 'inherit',
               }}
             >
-              Order
+              Orders
             </MenuItem>
             {(user.role === 'STAFF' || user.role === 'ADMIN') && (
               <MenuItem

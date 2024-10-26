@@ -1,5 +1,3 @@
-// src/pages/ReservationConfirmation.tsx
-
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -16,12 +14,11 @@ import Navbar from '../components/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ReservationDto,
-  TableDto,
   ApiError,
 } from '../types/Interfaces';
 import {
   getReservationById,
-  getTablesFloor1,
+  getTableByTableId,
 } from '../services/reservationService';
 import { toast } from 'react-toastify';
 
@@ -30,12 +27,13 @@ const ReservationConfirmation: React.FC = () => {
   const { reservationId } = useParams<{ reservationId: string }>();
 
   const [reservation, setReservation] = useState<ReservationDto | null>(null);
-  const [reservedTables, setReservedTables] = useState<TableDto[]>([]);
+  const [tableNumber, setTableNumber] = useState<number | null>(null);
+  const [tableCapacity, setTableCapacity] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
-    const fetchReservationDetails = async () => {
+    const fetchReservationAndTable = async () => {
       if (!reservationId) {
         toast.error('No reservation ID provided.');
         navigate('/reservations');
@@ -43,18 +41,12 @@ const ReservationConfirmation: React.FC = () => {
       }
 
       try {
-        // Fetch Reservation Details
         const fetchedReservation = await getReservationById(reservationId);
         setReservation(fetchedReservation);
 
-        // Fetch Table Details
-        const fetchedTables = await getTablesFloor1(); // Since we're using Floor 1
-        const table = fetchedTables.find((t) => t.id === fetchedReservation.tableId);
-        if (table) {
-          setReservedTables([table]);
-        } else {
-          setReservedTables([]);
-        }
+        const fetchedTable = await getTableByTableId(fetchedReservation.tableId);
+        setTableNumber(fetchedTable.tableNumber);
+        setTableCapacity(fetchedTable.capacity);
       } catch (err: any) {
         if (err.response && err.response.data) {
           setError(err.response.data as ApiError);
@@ -76,7 +68,7 @@ const ReservationConfirmation: React.FC = () => {
       }
     };
 
-    fetchReservationDetails();
+    fetchReservationAndTable();
   }, [reservationId, navigate]);
 
   const handleReturnHome = () => {
@@ -156,9 +148,9 @@ const ReservationConfirmation: React.FC = () => {
         >
           <Alert severity="error" sx={{ width: '80%', maxWidth: 600 }}>
             <Typography variant="h6">{error.message}</Typography>
-            {error.errors.map((err, idx) => (
+            {error.errors.map((errMsg, idx) => (
               <Typography key={idx} variant="body2">
-                {err}
+                {errMsg}
               </Typography>
             ))}
           </Alert>
@@ -184,8 +176,56 @@ const ReservationConfirmation: React.FC = () => {
     );
   }
 
-  if (!reservation || reservedTables.length === 0) {
-    return null; // Prevent rendering if data is incomplete
+  if (!reservation || tableNumber === null || tableCapacity === null) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          position: 'relative',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          color: '#ffffff',
+        }}
+      >
+        {/* Fixed Navbar */}
+        <Navbar />
+
+        {/* No Reservation Found */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Alert severity="warning" sx={{ width: '80%', maxWidth: 600 }}>
+            <Typography variant="h6">Reservation not found.</Typography>
+            <Typography variant="body2">
+              The reservation you are looking for does not exist or has been canceled.
+            </Typography>
+          </Alert>
+        </Box>
+
+        {/* Footer */}
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            px: 2,
+            mt: 'auto',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="body2" sx={{ fontFamily: 'League Spartan, sans-serif' }}>
+            © {new Date().getFullYear()} RestaurantName. All rights reserved.
+          </Typography>
+        </Box>
+      </Box>
+    );
   }
 
   return (
@@ -273,7 +313,18 @@ const ReservationConfirmation: React.FC = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="subtitle1">
-                    {reservedTables.map((table) => `Table ${table.tableNumber}`).join(', ')}
+                    {`Table ${tableNumber}`}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Table Capacity:
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    {tableCapacity}
                   </Typography>
                 </Grid>
 

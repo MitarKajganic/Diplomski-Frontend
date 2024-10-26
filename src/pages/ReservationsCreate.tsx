@@ -1,5 +1,3 @@
-// src/pages/Reservations.tsx
-
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
@@ -7,7 +5,6 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Alert,
   TextField,
 } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -18,16 +15,15 @@ import floorPlan from '../assets/images/floor-plan-1.png';
 import { styled } from '@mui/system';
 import { toast } from 'react-toastify';
 import {
-  getTablesFloor1,
+  getAllTables,
   createReservation,
 } from '../services/reservationService';
 import { TableDto, ReservationCreateDto } from '../types/Interfaces';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Tooltip from '@mui/material/Tooltip';
-import { addDays, setHours, setMinutes } from 'date-fns'; // Import necessary functions
+import { addDays, setHours, setMinutes } from 'date-fns';
 
-// Styled TableButton Component with Responsive Font Size
 const TableButton = styled(Button)<{
   top: string;
   left: string;
@@ -50,8 +46,7 @@ const TableButton = styled(Button)<{
   fontWeight: 'normal',
   fontFamily: 'League Spartan, sans-serif',
   transition: 'background-color 0.3s, border-color 0.3s',
-  // Responsive font sizes using theme breakpoints
-  fontSize: '2rem', // Default for mobile
+  fontSize: '2rem',
   [theme.breakpoints.up('sm')]: {
     fontSize: '2.5rem',
   },
@@ -69,20 +64,20 @@ const Reservations: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [reservationLoading, setReservationLoading] = useState<boolean>(false);
 
-  // Form state
   const [reservationTime, setReservationTime] = useState<Date | null>(
-    setHours(setMinutes(addDays(new Date(), 1), 0), 10) // Initialize to tomorrow at 10:00 AM
+    setHours(setMinutes(addDays(new Date(), 1), 0), 10)
   );
   const [numberOfGuests, setNumberOfGuests] = useState<number>(1);
   const [guestName, setGuestName] = useState<string>('');
   const [guestEmail, setGuestEmail] = useState<string>('');
   const [guestPhone, setGuestPhone] = useState<string>('');
 
-  // Fetch tables on Floor 1
+  const [selectedTableCapacity, setSelectedTableCapacity] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        const fetchedTables = await getTablesFloor1();
+        const fetchedTables = await getAllTables();
         console.log(fetchedTables);
         setTables(fetchedTables);
       } catch (err) {
@@ -96,35 +91,33 @@ const Reservations: React.FC = () => {
     fetchTables();
   }, []);
 
-  // Handler for table click
   const handleTableClick = (table: TableDto) => {
-    if (table.reservations && table.reservations.length > 0) {
-      toast.error(`Table ${table.tableNumber} is already reserved.`);
+    if (!table.isAvailable) {
+      toast.error(`Table ${table.tableNumber} is not available.`);
       return;
     }
 
     if (selectedTable === table.id) {
       setSelectedTable(null);
+      setSelectedTableCapacity(null);
       toast.info(`Table ${table.tableNumber} deselected.`);
     } else {
       setSelectedTable(table.id);
+      setSelectedTableCapacity(table.capacity);
       toast.success(`Table ${table.tableNumber} selected.`);
     }
   };
 
-  // Helper function to validate reservation time
   const isValidReservationTime = (date: Date): boolean => {
     const hour = date.getHours();
     const minute = date.getMinutes();
 
-    // Check if time is between 10:00 AM and 7:30 PM
     if (hour < 10 || (hour === 19 && minute > 30) || hour > 19) {
       return false;
     }
     return true;
   };
 
-  // Handler for confirming reservation
   const handleConfirmReservation = async () => {
     if (!selectedTable) {
       toast.error('Please select a table.');
@@ -146,10 +139,8 @@ const Reservations: React.FC = () => {
         toast.error('Please fill out all guest details.');
         return;
       }
-      // Add additional validation as needed (e.g., email format, phone number)
     }
 
-    // Validate reservation time
     if (!isValidReservationTime(reservationTime)) {
       toast.error('Please select a time between 10:00 AM and 7:30 PM.');
       return;
@@ -158,10 +149,9 @@ const Reservations: React.FC = () => {
     setReservationLoading(true);
 
     try {
-      // Prepare reservation data
       const reservationData: ReservationCreateDto = {
         tableId: selectedTable,
-        reservationTime: new Date(reservationTime.getTime() + 60 * 60 * 1000).toISOString(), // Add 1 hour
+        reservationTime: new Date(reservationTime.getTime() + 60 * 60 * 1000).toISOString(),
         numberOfGuests: numberOfGuests,
         userId: user ? user.id : undefined,
         guestName: user ? undefined : guestName,
@@ -171,32 +161,31 @@ const Reservations: React.FC = () => {
 
       console.log('Reservation Data:', reservationData);
 
-      // Send reservation request
       const reservation = await createReservation(reservationData);
-
-      console.log(reservationData);
 
       toast.success('Reservation confirmed successfully!');
 
-      // Navigate to a confirmation page with reservation details
-      navigate(`/reservations/${reservation.id}`); // Modify as needed
+      navigate(`/reservations/${reservation.id}`);
 
-      // Reset selections and form inputs
       setSelectedTable(null);
-      setReservationTime(setHours(setMinutes(addDays(new Date(), 1), 0), 10)); // Reset to tomorrow at 10:00 AM
+      setSelectedTableCapacity(null);
+      setReservationTime(setHours(setMinutes(addDays(new Date(), 1), 0), 10));
       setNumberOfGuests(1);
       setGuestName('');
       setGuestEmail('');
       setGuestPhone('');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Reservation error:', err);
-      toast.error('Failed to confirm reservation. Please try again.');
+      if (err.response && err.response.data && err.response.data.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error('Failed to confirm reservation. Please try again.');
+      }
     } finally {
       setReservationLoading(false);
     }
   };
 
-  // Common styles for TextFields to have white text and labels
   const textFieldStyles = {
     mb: 2,
     '& .MuiInputBase-input': { color: 'white' },
@@ -283,11 +272,10 @@ const Reservations: React.FC = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            paddingX: 2,
           }}
         >
-          <Alert severity="error" sx={{ width: '80%', maxWidth: 600 }}>
-            {error}
-          </Alert>
+
         </Box>
 
         {/* Footer */}
@@ -352,7 +340,7 @@ const Reservations: React.FC = () => {
               sx={{
                 textAlign: 'center',
                 fontFamily: 'League Spartan, sans-serif',
-                color: 'white', // Corrected color
+                color: 'white',
                 mb: 4,
               }}
             >
@@ -366,7 +354,7 @@ const Reservations: React.FC = () => {
                   label="Reservation Time"
                   value={reservationTime}
                   onChange={(newValue: Date | null) => setReservationTime(newValue)}
-                  minDate={addDays(new Date(), 1)} // Set minimum date to tomorrow
+                  minDate={addDays(new Date(), 1)}
                   disablePast
                   slotProps={{
                     textField: {
@@ -374,16 +362,15 @@ const Reservations: React.FC = () => {
                       sx: {
                         ...textFieldStyles,
                         '& .MuiSvgIcon-root': {
-                          color: 'white', // Change icon color to white
+                          color: 'white',
                         },
                       },
                     },
                     dialog: {
                       PaperProps: {
                         sx: {
-                          backgroundColor: 'rgba(64, 64, 64, 1)', // Match theme's paper color
-                          color: '#ffffff', // Set all text in popover to white
-                          // Additional styles to ensure all nested text is white
+                          backgroundColor: 'rgba(64, 64, 64, 1)',
+                          color: '#ffffff',
                           '& .MuiTypography-root': {
                             color: '#ffffff',
                           },
@@ -391,19 +378,19 @@ const Reservations: React.FC = () => {
                             color: '#ffffff',
                           },
                           '& .MuiPickersDay-root.Mui-selected': {
-                            color: '#000000', // Black text on selected day for contrast
+                            color: '#000000',
                           },
                           '& .MuiClockPointer-pointer': {
-                            backgroundColor: '#ffffff', // White pointer
+                            backgroundColor: '#ffffff',
                           },
                           '& .MuiClockPointer-thumb': {
-                            backgroundColor: '#ffffff', // White thumb
+                            backgroundColor: '#ffffff',
                           },
                           '& .MuiClock-face': {
-                            color: '#ffffff', // White clock face
+                            color: '#ffffff',
                           },
                           '& .MuiPickersToolbar-toolbar': {
-                            backgroundColor: 'rgba(64, 64, 64, 1)', // Match paper background
+                            backgroundColor: 'rgba(64, 64, 64, 1)',
                             color: '#ffffff',
                           },
                           '& .MuiPickersCalendarHeader-label': {
@@ -456,16 +443,46 @@ const Reservations: React.FC = () => {
               )}
             </Box>
 
+            {/* Selected Table Info and Confirm Button (Moved Below the Form) */}
+            <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Selected Table:{' '}
+                {selectedTable
+                  ? (
+                    <Box component="span" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                      Table {tables.find((t) => t.id === selectedTable)?.tableNumber || ''}
+                      {` (Max Capacity: ${selectedTableCapacity || 'N/A'})`}
+                    </Box>
+                  )
+                  : 'None'}
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: '#D4AF37',
+                  color: '#000000',
+                  '&:hover': {
+                    backgroundColor: '#CDA434',
+                  },
+                }}
+                onClick={handleConfirmReservation}
+                disabled={reservationLoading || !selectedTable}
+              >
+                {reservationLoading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Reservation'}
+              </Button>
+            </Box>
+
             {/* Floor Plan Container */}
             <Box
               sx={{
                 position: 'relative',
-                width: '80%', // Adjusted width
-                maxWidth: '800px', // Maximum width
-                margin: '0 auto', // Center the container
+                width: '80%',
+                maxWidth: '800px',
+                margin: '0 auto',
                 borderRadius: 2,
                 boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)',
-                overflow: 'hidden', // Ensures table buttons don't overflow the container
+                overflow: 'hidden',
               }}
             >
               <Box
@@ -482,11 +499,7 @@ const Reservations: React.FC = () => {
               {tables.map((table) => (
                 <Tooltip
                   key={table.id}
-                  title={
-                    table.reservations && table.reservations.length > 0
-                      ? `Reserved by ${table.reservations[0].guestName || 'User'}`
-                      : 'Available'
-                  }
+                  title={table.isAvailable ? 'Available' : 'Not Available'}
                   arrow
                   placement="top"
                 >
@@ -501,23 +514,23 @@ const Reservations: React.FC = () => {
                       selected={selectedTable === table.id}
                       aria-label={`Table ${table.tableNumber}`}
                       aria-pressed={selectedTable === table.id}
-                      disabled={table.reservations && table.reservations.length > 0}
+                      disabled={!table.isAvailable}
                       sx={{
                         backgroundColor:
-                          table.reservations && table.reservations.length > 0
-                            ? 'rgba(128, 128, 128, 1)' // Solid Gray for reserved
+                          !table.isAvailable
+                            ? 'rgba(128, 128, 128, 1)'
                             : selectedTable === table.id
-                            ? 'rgba(255, 0, 0, 1)' // Solid Red if selected
+                            ? 'rgba(255, 0, 0, 1)'
                             : [1, 2, 3, 4].includes(table.tableNumber)
-                            ? 'rgba(0, 0, 0, 1)' // Solid Black for tables 1-4
+                            ? 'rgba(0, 0, 0, 1)'
                             : 'transparent',
                         border:
-                          table.reservations && table.reservations.length > 0
-                            ? '2px solid rgba(128, 128, 128, 1)' // Solid Gray border if reserved
+                          !table.isAvailable
+                            ? '2px solid rgba(128, 128, 128, 1)'
                             : [1, 2, 3, 4].includes(table.tableNumber)
-                            ? '2px solid rgba(0, 0, 0, 1)' // Solid Black border for tables 1-4
-                            : '2px solid rgba(255, 255, 255, 0.5)', // White border otherwise
-                        zIndex: 1, // Ensure buttons are above the image
+                            ? '2px solid rgba(0, 0, 0, 1)'
+                            : '2px solid rgba(255, 255, 255, 0.5)',
+                        zIndex: 1,
                       }}
                     >
                       {table.tableNumber}
@@ -525,34 +538,6 @@ const Reservations: React.FC = () => {
                   </span>
                 </Tooltip>
               ))}
-            </Box>
-
-            {/* Selected Tables Info and Confirm Button */}
-            <Box sx={{ mt: 4, textAlign: 'center' }}>
-              <Typography variant="h6">
-                Selected Table:{' '}
-                {selectedTable
-                  ? `Table ${
-                      tables.find((t) => t.id === selectedTable)?.tableNumber || ''
-                    }`
-                  : 'None'}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                  mt: 2,
-                  backgroundColor: '#D4AF37',
-                  color: '#000000',
-                  '&:hover': {
-                    backgroundColor: '#CDA434',
-                  },
-                }}
-                onClick={handleConfirmReservation}
-                disabled={reservationLoading || !selectedTable}
-              >
-                {reservationLoading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Reservation'}
-              </Button>
             </Box>
           </motion.div>
         </Container>
@@ -578,22 +563,16 @@ const Reservations: React.FC = () => {
   );
 };
 
-// Utility function to determine table position based on floor
 const getTablePosition = (table: TableDto) => {
-  if (table.tableNumber >= 1 && table.tableNumber <= 4) {
-    const floor1Positions: {
-      [key: number]: { top: string; left: string; width: string; height: string };
-    } = {
-      1: { top: '34.5%', left: '48.6%', width: '13%', height: '22%' },
-      2: { top: '34.5%', left: '66.5%', width: '13%', height: '22%' },
-      3: { top: '71%', left: '48.6%', width: '13%', height: '22%' },
-      4: { top: '71%', left: '66.5%', width: '13%', height: '22%' },
-    };
-    return floor1Positions[table.tableNumber] || { top: '0%', left: '0%', width: '5%', height: '5%' };
-  } else {
-    // Floor 2 positions (not used for now)
-    return { top: '0%', left: '0%', width: '5%', height: '5%' };
-  }
+  const Positions: {
+    [key: number]: { top: string; left: string; width: string; height: string };
+  } = {
+    1: { top: '34.5%', left: '48.6%', width: '13%', height: '22%' },
+    2: { top: '34.5%', left: '66.5%', width: '13%', height: '22%' },
+    3: { top: '71%', left: '48.6%', width: '13%', height: '22%' },
+    4: { top: '71%', left: '66.5%', width: '13%', height: '22%' },
+  };
+  return Positions[table.tableNumber] || { top: '0%', left: '0%', width: '5%', height: '5%' };
 };
 
 export default Reservations;
