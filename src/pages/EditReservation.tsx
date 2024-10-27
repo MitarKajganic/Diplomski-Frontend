@@ -130,7 +130,7 @@ const EditReservation: React.FC = () => {
     }
   };
 
-  const handleUserChange = (event: any, value: UserDto | null) => {
+  const handleUserChange = (_event: any, value: UserDto | null) => {
     setSelectedUser(value);
     if (value) {
       setGuestInfo({

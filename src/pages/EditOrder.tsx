@@ -14,7 +14,8 @@ import {
   FormControl,
   CircularProgress,
   Alert,
-  Divider
+  Divider,
+  Autocomplete,
 } from '@mui/material';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
@@ -31,11 +32,15 @@ import { getOrderById, updateOrder, getAllMenuItems } from '../services/orderSer
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import menuItemBg from '../assets/images/burger.jpg';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { v4 as uuidv4 } from 'uuid';
 
 interface OrderItemState {
-  menuItem: MenuItemDto;
+  id: string;
+  menuItem: MenuItemDto | null;
   quantity: number;
 }
 
@@ -92,18 +97,9 @@ const EditOrder: React.FC = () => {
 
         const mappedOrderItems: OrderItemState[] = fetchedOrder.orderItems.map((orderItem: any) => {
           const menuItem = fetchedMenuItems.find((item: MenuItemDto) => item.id === orderItem.menuItemId);
-          if (!menuItem) {
-            console.warn(`Menu item with ID ${orderItem.menuItemId} not found.`);
-          }
           return {
-            menuItem: menuItem || {
-              id: orderItem.menuItemId,
-              name: 'Unknown Item',
-              description: '',
-              price: 0,
-              category: '',
-              menuId: null,
-            },
+            id: uuidv4(),
+            menuItem: menuItem || null,
             quantity: orderItem.quantity,
           };
         });
@@ -150,19 +146,52 @@ const EditOrder: React.FC = () => {
     setOrderItems(newOrderItems);
   };
 
+  const handleAddMenuItem = () => {
+    setOrderItems([
+      ...orderItems,
+      {
+        id: uuidv4(),
+        menuItem: null,
+        quantity: 1,
+      },
+    ]);
+  };
+
+  const handleRemoveMenuItem = (id: string) => {
+    const updatedOrderItems = orderItems.filter((item) => item.id !== id);
+    setOrderItems(updatedOrderItems);
+    toast.info('Menu item removed from the order.');
+  };
+
+  const handleMenuItemChange = (index: number, newMenuItem: MenuItemDto | null) => {
+    if (newMenuItem) {
+      const updatedOrderItems = [...orderItems];
+      updatedOrderItems[index].menuItem = newMenuItem;
+      setOrderItems(updatedOrderItems);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!orderId || !order) {
       toast.error('Order data is missing.');
       return;
     }
 
+    for (const item of orderItems) {
+      if (!item.menuItem) {
+        toast.error('Please select a menu item for all order items.');
+        return;
+      }
+    }
+
     setUpdating(true);
 
     try {
-
       const menuItemIdsAndQuantities: { [key: string]: number } = {};
       orderItems.forEach(item => {
-        menuItemIdsAndQuantities[item.menuItem.id] = item.quantity;
+        if (item.menuItem?.id) {
+          menuItemIdsAndQuantities[item.menuItem.id] = item.quantity;
+        }
       });
 
       const updatedOrder: OrderCreateDto = {
@@ -470,26 +499,69 @@ const EditOrder: React.FC = () => {
               ) : (
                 <Grid container spacing={2}>
                   {orderItems.map((itemState, index) => (
-                    <Grid item xs={12} key={itemState.menuItem.id}>
-                      <Card sx={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(5px) brightness(0.5)' }}>
+                    <Grid item xs={12} key={itemState.id}>
+                      <Card
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          backdropFilter: 'blur(5px) brightness(0.5)',
+                          p: 2,
+                        }}
+                      >
                         <CardMedia
                           component="img"
                           sx={{ width: 100, height: 100, objectFit: 'cover' }}
                           image={menuItemBg}
-                          alt={itemState.menuItem.name}
+                          alt={itemState.menuItem?.name || 'Unknown Item'}
                         />
                         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: 2 }}>
-                          <Typography variant="h6" sx={{ color: '#ffffff' }}>
-                            {itemState.menuItem.name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: '#ffffff' }}>
-                            {itemState.menuItem.description}
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
-                            Price: ${itemState.menuItem.price.toFixed(2)}
-                          </Typography>
+                          <Autocomplete
+                            options={menuItems.filter(
+                              (mi) =>
+                                !orderItems.some(
+                                  (oi) => oi.menuItem?.id === mi.id && oi.id !== itemState.id
+                                )
+                            )}
+                            getOptionLabel={(option) => option.name}
+                            value={itemState.menuItem}
+                            onChange={(_event, newValue) => handleMenuItemChange(index, newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Menu Item"
+                                required
+                                InputLabelProps={{ style: { color: '#ffffff' } }}
+                                sx={{
+                                  '& .MuiInputLabel-root': { color: '#ffffff' },
+                                  '& .MuiOutlinedInput-root': {
+                                    '& fieldset': { borderColor: '#ffffff' },
+                                    '&:hover fieldset': { borderColor: '#ffffff' },
+                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
+                                  },
+                                  '& .MuiAutocomplete-inputRoot': {
+                                    color: '#ffffff',
+                                  },
+                                  '& .MuiAutocomplete-input': {
+                                    color: '#ffffff',
+                                  },
+                                  '& .MuiSvgIcon-root': { color: '#ffffff' },
+                                }}
+                              />
+                            )}
+                          />
+                          {itemState.menuItem && (
+                            <>
+                              <Typography variant="body2" sx={{ color: '#ffffff', mt: 1 }}>
+                                {itemState.menuItem.description}
+                              </Typography>
+                              <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
+                                Price: ${itemState.menuItem.price.toFixed(2)}
+                              </Typography>
+                            </>
+                          )}
                         </Box>
-                        <Box sx={{ mr: 2 }}>
+                        <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
                           <TextField
                             label="Quantity"
                             type="number"
@@ -509,12 +581,41 @@ const EditOrder: React.FC = () => {
                               '& .MuiInputBase-input': { color: '#ffffff' },
                             }}
                           />
+                          <Button
+                            variant="text"
+                            color="error"
+                            onClick={() => handleRemoveMenuItem(itemState.id)}
+                            sx={{ ml: 2 }}
+                          >
+                            <DeleteIcon />
+                          </Button>
                         </Box>
                       </Card>
                     </Grid>
                   ))}
                 </Grid>
               )}
+            </Box>
+
+            {/* Add Menu Item Button */}
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={handleAddMenuItem}
+                sx={{
+                  fontFamily: 'League Spartan, sans-serif',
+                  textTransform: 'none',
+                  borderColor: '#ffffff',
+                  color: '#ffffff',
+                  '&:hover': {
+                    borderColor: '#ffffff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Add Menu Item
+              </Button>
             </Box>
 
             {/* Submit Button */}
