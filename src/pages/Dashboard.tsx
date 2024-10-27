@@ -1,5 +1,3 @@
-// src/pages/Dashboard.tsx
-
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
@@ -53,7 +51,6 @@ const Dashboard: React.FC = () => {
   const [errorOrders, setErrorOrders] = useState<ApiError | null>(null);
   const [errorReservations, setErrorReservations] = useState<ApiError | null>(null);
 
-  // Checkbox States
   const [hideNonEditableOrders, setHideNonEditableOrders] = useState<boolean>(false);
   const [hideExpiredReservations, setHideExpiredReservations] = useState<boolean>(false);
 
@@ -65,7 +62,6 @@ const Dashboard: React.FC = () => {
       try {
         const data = await getAllOrders();
 
-        // Sort orders by createdAt descending (latest first)
         const sortedOrders = data.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -96,27 +92,22 @@ const Dashboard: React.FC = () => {
       try {
         const data = await getAllReservationsIncludingDeleted();
 
-        // Sort reservations by reservationTime ascending (earliest first)
         const sortedReservations = data.sort(
           (a, b) => new Date(b.reservationTime).getTime() - new Date(a.reservationTime).getTime()
         );
 
         setReservations(sortedReservations);
 
-        // Extract unique tableIds to avoid redundant API calls
         const uniqueTableIds = Array.from(new Set(data.map(reservation => reservation.tableId)));
 
-        // Fetch table details for each unique tableId
         const tablePromises = uniqueTableIds.map(id => getTableByTableId(id));
         const tables: TableDto[] = await Promise.all(tablePromises);
 
-        // Create a mapping of tableId to table details
         const tableMap: { [key: string]: TableDto } = {};
         tables.forEach(table => {
           tableMap[table.id] = table;
         });
 
-        // Enrich reservations with tableNumber and tableCapacity
         const enriched: EnhancedReservation[] = data.map(reservation => ({
           ...reservation,
           tableNumber: tableMap[reservation.tableId]?.tableNumber || 0,
@@ -192,7 +183,6 @@ const Dashboard: React.FC = () => {
     navigate(`/${type}s/${id}/edit`);
   };
 
-  // Helper functions to determine if an order/reservation is editable
   const isOrderEditable = (status: string): boolean => {
     return !['COMPLETED', 'CANCELLED'].includes(status.toUpperCase());
   };
@@ -201,7 +191,6 @@ const Dashboard: React.FC = () => {
     return new Date(reservationTime) > new Date();
   };
 
-  // Filtered lists based on checkbox states
   const filteredOrders = hideNonEditableOrders
     ? orders.filter(order => isOrderEditable(order.status))
     : orders;

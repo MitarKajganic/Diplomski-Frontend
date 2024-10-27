@@ -1,5 +1,3 @@
-// src/pages/EditReservation.tsx
-
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
@@ -77,11 +75,9 @@ const EditReservation: React.FC = () => {
       }
 
       try {
-        // Fetch All Users
         const fetchedUsers = await getAllUsers();
         setUsers(fetchedUsers);
 
-        // Fetch Reservation Details
         const fetchedReservation = await getReservationById(reservationId);
         setReservation(fetchedReservation);
         setSelectedTableId(fetchedReservation.tableId);
@@ -99,7 +95,6 @@ const EditReservation: React.FC = () => {
           });
         }
 
-        // Fetch All Tables
         const fetchedTables = await getAllTables();
         const sortedTables = fetchedTables.sort((a, b) => a.tableNumber - b.tableNumber);
         setTables(sortedTables);
@@ -125,14 +120,13 @@ const EditReservation: React.FC = () => {
     };
 
     fetchReservationData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationId, user]);
 
   const handleTableChange = (e: SelectChangeEvent<string>) => {
     setSelectedTableId(e.target.value);
     const table = tables.find((t) => t.id === e.target.value);
     if (table) {
-      // Optionally, validate numberOfGuests against table.capacity here
+      setNumberOfGuests(Math.min(numberOfGuests, table.capacity));
     }
   };
 
@@ -162,7 +156,6 @@ const EditReservation: React.FC = () => {
       return;
     }
 
-    // Additional validation can be added here
     if (!selectedTableId) {
       toast.error('Please select a table.');
       return;
@@ -186,7 +179,6 @@ const EditReservation: React.FC = () => {
     setUpdating(true);
 
     try {
-      // Prepare ReservationCreateDto
       const updatedReservation: ReservationCreateDto = {
         tableId: selectedTableId,
         reservationTime: new Date(reservationTime.getTime() + 60 * 60 * 1000).toISOString(),
@@ -197,7 +189,6 @@ const EditReservation: React.FC = () => {
         guestPhone: selectedUser ? undefined : guestInfo.guestPhone,
       };
 
-      // Send Update Request
       await updateReservation(reservationId, updatedReservation);
       toast.success('Reservation updated successfully!');
       navigate(`/reservations/${reservationId}`);
@@ -654,19 +645,6 @@ const EditReservation: React.FC = () => {
       </Box>
     </Box>
   );
-};
-
-// Utility function to get table position (if needed)
-const getTablePosition = (table: TableDto) => {
-  const Positions: {
-    [key: number]: { top: string; left: string; width: string; height: string };
-  } = {
-    1: { top: '34.5%', left: '48.6%', width: '13%', height: '22%' },
-    2: { top: '34.5%', left: '66.5%', width: '13%', height: '22%' },
-    3: { top: '71%', left: '48.6%', width: '13%', height: '22%' },
-    4: { top: '71%', left: '66.5%', width: '13%', height: '22%' },
-  };
-  return Positions[table.tableNumber] || { top: '0%', left: '0%', width: '5%', height: '5%' };
 };
 
 export default EditReservation;

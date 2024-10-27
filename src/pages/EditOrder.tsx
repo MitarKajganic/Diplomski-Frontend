@@ -1,5 +1,3 @@
-// src/pages/EditOrder.tsx
-
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
@@ -7,7 +5,6 @@ import {
   Typography,
   Grid,
   Card,
-  CardContent,
   CardMedia,
   Button,
   TextField,
@@ -34,9 +31,8 @@ import { getOrderById, updateOrder, getAllMenuItems } from '../services/orderSer
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import EditIcon from '@mui/icons-material/Edit';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import menuItemBg from '../assets/images/burger.jpg';
-import { SelectChangeEvent } from '@mui/material/Select'; // Import SelectChangeEvent
+import { SelectChangeEvent } from '@mui/material/Select';
 
 interface OrderItemState {
   menuItem: MenuItemDto;
@@ -79,7 +75,6 @@ const EditOrder: React.FC = () => {
       }
 
       try {
-        // Fetch Order Details
         const fetchedOrder = await getOrderById(orderId);
         setOrder(fetchedOrder);
         setStatus(fetchedOrder.status);
@@ -92,12 +87,10 @@ const EditOrder: React.FC = () => {
           phoneNumber: fetchedOrder.deliveryInfo.phoneNumber,
         });
 
-        // Fetch All Menu Items
         const fetchedMenuItems = await getAllMenuItems();
         setMenuItems(fetchedMenuItems);
 
-        // Map Order Items to OrderItemState with explicit typing
-        const mappedOrderItems: OrderItemState[] = fetchedOrder.orderItems.map((orderItem: any) => { // Explicitly type orderItem
+        const mappedOrderItems: OrderItemState[] = fetchedOrder.orderItems.map((orderItem: any) => {
           const menuItem = fetchedMenuItems.find((item: MenuItemDto) => item.id === orderItem.menuItemId);
           if (!menuItem) {
             console.warn(`Menu item with ID ${orderItem.menuItemId} not found.`);
@@ -140,7 +133,7 @@ const EditOrder: React.FC = () => {
     fetchOrderAndMenuItems();
   }, [orderId, user, navigate]);
 
-  const handleStatusChange = (e: SelectChangeEvent<Status>) => { // Use SelectChangeEvent
+  const handleStatusChange = (e: SelectChangeEvent<Status>) => {
     setStatus(e.target.value as Status);
   };
 
@@ -158,7 +151,7 @@ const EditOrder: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!orderId || !order) { // Ensure orderId is defined
+    if (!orderId || !order) {
       toast.error('Order data is missing.');
       return;
     }
@@ -166,13 +159,12 @@ const EditOrder: React.FC = () => {
     setUpdating(true);
 
     try {
-      // Prepare menuItemIdsAndQuantities
+
       const menuItemIdsAndQuantities: { [key: string]: number } = {};
       orderItems.forEach(item => {
         menuItemIdsAndQuantities[item.menuItem.id] = item.quantity;
       });
 
-      // Prepare OrderCreateDto
       const updatedOrder: OrderCreateDto = {
         status: status,
         userId: order.userId,
@@ -189,8 +181,7 @@ const EditOrder: React.FC = () => {
 
       console.log('Updated Order:', updatedOrder);
 
-      // Send Update Request
-      await updateOrder(orderId, updatedOrder); // Ensure updateOrder accepts OrderCreateDto
+      await updateOrder(orderId, updatedOrder);
       toast.success('Order updated successfully!');
       navigate(`/orders/${orderId}`);
     } catch (err: any) {
@@ -484,7 +475,7 @@ const EditOrder: React.FC = () => {
                         <CardMedia
                           component="img"
                           sx={{ width: 100, height: 100, objectFit: 'cover' }}
-                          image={menuItemBg} // Replace with actual image if available
+                          image={menuItemBg}
                           alt={itemState.menuItem.name}
                         />
                         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: 2 }}>
