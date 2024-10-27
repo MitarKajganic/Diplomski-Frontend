@@ -104,6 +104,11 @@ const Reservations: React.FC = () => {
     } else {
       setSelectedTable(table.id);
       setSelectedTableCapacity(table.capacity);
+      const newNumberOfGuests = Math.min(numberOfGuests, table.capacity);
+      if (newNumberOfGuests !== numberOfGuests) {
+        toast.info(`Number of guests adjusted to ${newNumberOfGuests} due to table capacity.`);
+      }
+      setNumberOfGuests(newNumberOfGuests);
       toast.success(`Table ${table.tableNumber} selected.`);
     }
   };

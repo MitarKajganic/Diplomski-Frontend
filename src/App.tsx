@@ -150,7 +150,7 @@ const App: React.FC = () => {
       </Router>
       <ToastContainer
         position="top-left"
-        autoClose={500}
+        autoClose={700}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick
