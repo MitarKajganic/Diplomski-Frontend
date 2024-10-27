@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CircularProgress, Typography, Container, Box, Alert } from '@mui/material';
-// import api from '../services/api';
 
 const OAuth2Callback: React.FC = () => {
   const { login } = useContext(AuthContext);
@@ -17,11 +16,9 @@ const OAuth2Callback: React.FC = () => {
 
       if (token) {
         try {
-          // Optional: Verify the token with the backend
-          // For example, make a request to /api/auth/me to get user info
-          // const userResponse = await api.get('/api/auth/me');
+          console.log(token)
           login(token);
-          navigate('/dashboard');
+          navigate('/home');
         } catch (err: any) {
           console.error('OAuth2 Login failed:', err);
           setError('Authentication failed. Please try again.');
