@@ -1,3 +1,5 @@
+// src/components/Navbar.tsx
+
 import React, { useContext, useState } from 'react';
 import {
   AppBar,
@@ -23,6 +25,7 @@ import { toast } from 'react-toastify';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import CreateIcon from '@mui/icons-material/Create';
 import SearchIcon from '@mui/icons-material/Search';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface NavButtonProps {
   to: string;
@@ -531,6 +534,28 @@ const Navbar: React.FC = () => {
             )}
           </>
         )}
+
+        {/* Cart MenuItem for Mobile */}
+        {user && (
+          <MenuItem
+            onClick={() => {
+              handleCartOpen();
+              handleMobileMenuClose();
+            }}
+            sx={{
+              fontFamily: 'League Spartan',
+              color: 'inherit',
+            }}
+          >
+            <ListItemIcon>
+              <Badge badgeContent={getTotalItems()} color="primary">
+                <ShoppingCartIcon fontSize="small" sx={{ color: 'white' }} />
+              </Badge>
+            </ListItemIcon>
+            Cart
+          </MenuItem>
+        )}
+
         {user ? (
           <MenuItem
             onClick={handleLogout}

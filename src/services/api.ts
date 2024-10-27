@@ -8,6 +8,13 @@ const api = axios.create({
   },
 });
 
+// const api = axios.create({
+//   baseURL: 'http://192.168.0.13:8080',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+// });
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwtToken');
