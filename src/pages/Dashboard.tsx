@@ -14,6 +14,8 @@ import {
   Alert,
   Tabs,
   Tab,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import Navbar from '../components/Navbar';
 import { motion } from 'framer-motion';
@@ -24,8 +26,8 @@ import {
   Role,
   TableDto,
 } from '../types/Interfaces';
-import { getAllOrders, getOrderById } from '../services/orderService';
-import { getAllReservations, getTableByTableId } from '../services/reservationService';
+import { getAllOrders } from '../services/orderService';
+import { getAllReservationsIncludingDeleted, getTableByTableId } from '../services/reservationService';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
@@ -51,6 +53,10 @@ const Dashboard: React.FC = () => {
   const [errorOrders, setErrorOrders] = useState<ApiError | null>(null);
   const [errorReservations, setErrorReservations] = useState<ApiError | null>(null);
 
+  // Checkbox States
+  const [hideNonEditableOrders, setHideNonEditableOrders] = useState<boolean>(false);
+  const [hideExpiredReservations, setHideExpiredReservations] = useState<boolean>(false);
+
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -58,7 +64,13 @@ const Dashboard: React.FC = () => {
     const fetchOrders = async () => {
       try {
         const data = await getAllOrders();
-        setOrders(data);
+
+        // Sort orders by createdAt descending (latest first)
+        const sortedOrders = data.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        setOrders(sortedOrders);
       } catch (err: any) {
         if (err.response && err.response.data) {
           setErrorOrders(err.response.data as ApiError);
@@ -82,8 +94,14 @@ const Dashboard: React.FC = () => {
 
     const fetchReservations = async () => {
       try {
-        const data = await getAllReservations();
-        setReservations(data);
+        const data = await getAllReservationsIncludingDeleted();
+
+        // Sort reservations by reservationTime ascending (earliest first)
+        const sortedReservations = data.sort(
+          (a, b) => new Date(b.reservationTime).getTime() - new Date(a.reservationTime).getTime()
+        );
+
+        setReservations(sortedReservations);
 
         // Extract unique tableIds to avoid redundant API calls
         const uniqueTableIds = Array.from(new Set(data.map(reservation => reservation.tableId)));
@@ -174,6 +192,24 @@ const Dashboard: React.FC = () => {
     navigate(`/${type}s/${id}/edit`);
   };
 
+  // Helper functions to determine if an order/reservation is editable
+  const isOrderEditable = (status: string): boolean => {
+    return !['COMPLETED', 'CANCELLED'].includes(status.toUpperCase());
+  };
+
+  const isReservationEditable = (reservationTime: string): boolean => {
+    return new Date(reservationTime) > new Date();
+  };
+
+  // Filtered lists based on checkbox states
+  const filteredOrders = hideNonEditableOrders
+    ? orders.filter(order => isOrderEditable(order.status))
+    : orders;
+
+  const filteredReservations = hideExpiredReservations
+    ? enhancedReservations.filter(reservation => isReservationEditable(reservation.reservationTime))
+    : enhancedReservations;
+
   return (
     <Box
       sx={{
@@ -253,6 +289,36 @@ const Dashboard: React.FC = () => {
               </Tabs>
             </Box>
 
+            {/* Checkboxes to Hide Non-Editable Items */}
+            {tabIndex === 0 && orders.length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={hideNonEditableOrders}
+                      onChange={(e) => setHideNonEditableOrders(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Hide Non-Editable Orders (COMPLETED or CANCELLED)"
+                />
+              </Box>
+            )}
+            {tabIndex === 1 && enhancedReservations.length > 0 && (
+              <Box sx={{ mt: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={hideExpiredReservations}
+                      onChange={(e) => setHideExpiredReservations(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Hide Expired Reservations"
+                />
+              </Box>
+            )}
+
             {/* Orders Tab Content */}
             {tabIndex === 0 && (
               <Box sx={{ mt: 4 }}>
@@ -273,14 +339,15 @@ const Dashboard: React.FC = () => {
                   </Box>
                 ) : (
                   <Grid container spacing={4}>
-                    {orders.length === 0 ? (
+                    {filteredOrders.length === 0 ? (
                       <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
                         No orders available.
                       </Typography>
                     ) : (
-                      orders.map((order, index) => {
+                      filteredOrders.map((order, index) => {
                         const totalPrice = calculateTotalPrice(order.orderItems);
                         const formattedDate = new Date(order.createdAt).toLocaleDateString();
+                        const editable = isOrderEditable(order.status);
 
                         return (
                           <Grid item xs={12} md={6} key={order.id}>
@@ -345,7 +412,7 @@ const Dashboard: React.FC = () => {
                                   >
                                     View Details
                                   </Button>
-                                  {(user?.role === Role.STAFF || user?.role === Role.ADMIN) && (
+                                  {editable && (user?.role === Role.STAFF || user?.role === Role.ADMIN) && (
                                     <Button
                                       size="small"
                                       color="secondary"
@@ -387,13 +454,14 @@ const Dashboard: React.FC = () => {
                   </Box>
                 ) : (
                   <Grid container spacing={4}>
-                    {enhancedReservations.length === 0 ? (
+                    {filteredReservations.length === 0 ? (
                       <Typography variant="h6" sx={{ textAlign: 'center', width: '100%' }}>
                         No reservations available.
                       </Typography>
                     ) : (
-                      enhancedReservations.map((reservation, index) => {
+                      filteredReservations.map((reservation, index) => {
                         const formattedTime = new Date(reservation.reservationTime).toLocaleString();
+                        const editable = isReservationEditable(reservation.reservationTime);
 
                         return (
                           <Grid item xs={12} sm={6} md={4} key={reservation.id}>
@@ -453,7 +521,7 @@ const Dashboard: React.FC = () => {
                                   >
                                     View Details
                                   </Button>
-                                  {(user?.role === Role.STAFF || user?.role === Role.ADMIN) && (
+                                  {editable && (user?.role === Role.STAFF || user?.role === Role.ADMIN) && (
                                     <Button
                                       size="small"
                                       color="secondary"

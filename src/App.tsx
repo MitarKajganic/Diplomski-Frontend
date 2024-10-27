@@ -17,6 +17,8 @@ import Reservations from './pages/ReservationsCreate';
 import ReservationConfirmation from './pages/ReservationConfirmation';
 import UserReservations from './pages/UserReservations';
 import ReservationFind from './pages/ReservationFind';
+import EditOrder from './pages/EditOrder';
+import EditReservation from './pages/EditReservation';
 import NotFoundPage from './pages/NotFoundPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,9 +39,11 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
         <Route path="/orders" element={<Orders />} /> {/* Orders Page */}
         <Route path="/orders/:orderId" element={<OrderConfirmation />} /> {/* Order Confirmation with orderId */}
+        <Route path="/orders/:orderId/edit" element={<EditOrder />} /> {/* Edit Order Page */}
         <Route path="/reservations/create" element={<Reservations />} /> {/* Reservations Page */}
         <Route path="/reservations/find" element={<ReservationFind />} /> {/* Find Reservation Page */}
         <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} /> {/* Reservation Confirmation */}
+        <Route path="/reservations/:reservationId/edit" element={<EditReservation />} /> {/* Edit Reservation Page */}
         <Route path="/user-reservations" element={<UserReservations />} /> {/* User Reservations Page */}
         <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
         <Route path="/register" element={<RegistrationPage />} /> {/* Registration Page */}
@@ -79,6 +83,7 @@ const AppContent: React.FC = () => {
   const isLoginPage = location.pathname === '/login';
   const isRegistration = location.pathname === '/register';
   const isLandingPage = location.pathname === '/';
+  const isDashboard = location.pathname === '/dashboard';
 
   return (
     <>
@@ -100,7 +105,7 @@ const AppContent: React.FC = () => {
       {/* Blur Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: isLoginPage || isRegistration ? 1 : 0 }}
+        animate={{ opacity: isLoginPage || isRegistration || isDashboard ? 1 : 0 }}
         transition={{ duration: 0.5 }}
         style={{
           position: 'fixed',
@@ -145,7 +150,7 @@ const App: React.FC = () => {
       </Router>
       <ToastContainer
         position="top-left"
-        autoClose={1000}
+        autoClose={500}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick

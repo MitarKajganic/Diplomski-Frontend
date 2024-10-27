@@ -132,6 +132,19 @@ export const getAllReservations = async (): Promise<ReservationDto[]> => {
 };
 
 /**
+ * Fetch all reservations inluding deleted.
+ */
+export const getAllReservationsIncludingDeleted = async (): Promise<ReservationDto[]> => {
+    try {
+        const response = await api.get<ReservationDto[]>('/reservations/all-including-deleted');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all reservations:', error);
+        throw error;
+    }
+};
+
+/**
  * Fetch reservations by guest phone.
  */
 export const getReservationsByGuestPhone = async (guestPhone: string): Promise<ReservationDto[]> => {
@@ -169,3 +182,47 @@ export const getReservationsByGuestName = async (guestName: string): Promise<Res
         throw error;
     }
 };
+
+/**
+ * Update a reservation.
+ */
+export const updateReservation = async (
+    reservationId: string,
+    reservationData: Partial<ReservationCreateDto>
+): Promise<ReservationDto> => {
+    try {
+        const response = await api.put<ReservationDto>(`/reservations/update/${reservationId}`, reservationData);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating reservation:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete a reservation.
+ */
+export const deleteReservation = async (
+    reservationId: string
+): Promise<ReservationDto> => {
+    try {
+        const response = await api.delete<ReservationDto>(`/reservations/delete/${reservationId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting reservation:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get All Users
+ */
+export const getAllUsers = async (): Promise<UserDto[]> => {
+    try {
+        const response = await api.get<UserDto[]>('/users');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all users:', error);
+        throw error;
+    }
+}

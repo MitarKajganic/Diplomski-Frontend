@@ -61,3 +61,15 @@ export const getAllOrders = async (): Promise<OrderDto[]> => {
   const response = await api.get<OrderDto[]>('/orders');
   return response.data;
 };
+
+// Fetch all MenuItems
+export const getAllMenuItems = async () => {
+  const response = await api.get('/menu-items');
+  return response.data;
+};
+
+// Update an Order
+export const updateOrder = async (orderId: string, orderCreateDto: OrderCreateDto) => {
+  const response = await api.put(`/orders/update/${orderId}`, orderCreateDto);
+  return response.data;
+};
