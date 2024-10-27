@@ -1,5 +1,3 @@
-// src/components/Navbar.tsx
-
 import React, { useContext, useState } from 'react';
 import {
   AppBar,

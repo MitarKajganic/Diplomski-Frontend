@@ -19,6 +19,7 @@ import UserReservations from './pages/UserReservations';
 import ReservationFind from './pages/ReservationFind';
 import EditOrder from './pages/EditOrder';
 import EditReservation from './pages/EditReservation';
+import AdminPage from './pages/Admin'; 
 import NotFoundPage from './pages/NotFoundPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -70,6 +71,14 @@ const AnimatedRoutes: React.FC = () => {
           element={
             <ProtectedRoute>
               <OrderConfirmation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
             </ProtectedRoute>
           }
         />
