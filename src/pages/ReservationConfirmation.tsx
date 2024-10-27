@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
   Container,
@@ -21,10 +21,13 @@ import {
   getTableByTableId,
 } from '../services/reservationService';
 import { toast } from 'react-toastify';
+import EditIcon from '@mui/icons-material/Edit';
+import { AuthContext } from '../context/AuthContext';
 
 const ReservationConfirmation: React.FC = () => {
   const navigate = useNavigate();
   const { reservationId } = useParams<{ reservationId: string }>();
+  const { user } = useContext(AuthContext);
 
   const [reservation, setReservation] = useState<ReservationDto | null>(null);
   const [tableNumber, setTableNumber] = useState<number | null>(null);
@@ -73,6 +76,10 @@ const ReservationConfirmation: React.FC = () => {
 
   const handleReturnHome = () => {
     navigate('/home');
+  };
+
+  const handleEditReservation = (reservationId: string) => {
+    navigate(`/reservations/${reservationId}/edit`);
   };
 
   if (loading) {
@@ -331,6 +338,23 @@ const ReservationConfirmation: React.FC = () => {
                 {/* Add more reservation details as needed */}
               </Grid>
             </Box>
+
+            {(user?.role === 'STAFF' || user?.role === 'ADMIN') && (
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<EditIcon />}
+                  onClick={() => handleEditReservation(reservation.id)}
+                  sx={{
+                    fontFamily: 'League Spartan, sans-serif',
+                    textTransform: 'none',
+                  }}
+                >
+                  Edit Reservation
+                </Button>
+              </Box>
+            )}
 
             {/* Return to Home Button */}
             <Box sx={{ textAlign: 'center', mt: 4 }}>

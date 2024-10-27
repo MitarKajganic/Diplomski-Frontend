@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
   Container,
@@ -20,7 +20,7 @@ import {
   OrderItemDto,
   BillDto,
   TransactionDto,
-  ApiError,
+  ApiError
 } from '../types/Interfaces';
 import {
   getOrderById,
@@ -28,6 +28,8 @@ import {
   getTransactionsByBillId,
 } from '../services/orderService';
 import { toast } from 'react-toastify';
+import EditIcon from '@mui/icons-material/Edit';
+import { AuthContext } from '../context/AuthContext';
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +40,8 @@ const OrderConfirmation: React.FC = () => {
   const [transactions, setTransactions] = useState<TransactionDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<ApiError | null>(null);
+
+  const { user } = useContext(AuthContext); 
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -182,6 +186,10 @@ const OrderConfirmation: React.FC = () => {
   if (!order || !bill) {
     return null;
   }
+
+  const handleEditOrder = (orderId: string) => {
+    navigate(`/orders/${orderId}/edit`);
+  };
 
   return (
     <Box
@@ -441,6 +449,24 @@ const OrderConfirmation: React.FC = () => {
                   ))}
                 </Grid>
               </Box>
+
+              {/* Conditional Edit Button */}
+            {(user?.role === 'STAFF' || user?.role === 'ADMIN') && (
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<EditIcon />}
+                  onClick={() => handleEditOrder(order.id)}
+                  sx={{
+                    fontFamily: 'League Spartan, sans-serif',
+                    textTransform: 'none',
+                  }}
+                >
+                  Edit Order
+                </Button>
+              </Box>
+            )}
 
               {/* Return to Home Button */}
               <Box sx={{ textAlign: 'center', mt: 4 }}>

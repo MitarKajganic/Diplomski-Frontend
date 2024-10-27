@@ -119,19 +119,6 @@ export const findReservationByGuestEmail = async (guestEmail: string): Promise<R
 };
 
 /**
- * Find reservation by guest phone
- */
-export const findReservationByGuestPhone = async (guestPhone: string): Promise<ReservationDto[]> => {
-    try {
-        const response = await api.get<ReservationDto[]>(`/guest-phone/${encodeURIComponent(guestPhone)}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error finding reservation by guest phone:', error);
-        throw error;
-    }
-};
-
-/**
  * Fetch all reservations.
  */
 export const getAllReservations = async (): Promise<ReservationDto[]> => {

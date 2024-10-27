@@ -144,16 +144,17 @@ const App: React.FC = () => {
         <AppContent />
       </Router>
       <ToastContainer
-        position="top-right"
-        autoClose={3000}
+        position="top-left"
+        autoClose={1000}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop={true}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="colored"
+        limit={1}
       />
     </ThemeProvider>
   );
