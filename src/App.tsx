@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -35,26 +36,33 @@ const AnimatedRoutes: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Landing />} /> {/* Landing Page */}
-        <Route path="/home" element={<Home />} /> {/* Home Page with Navbar */}
-        <Route path="/menu" element={<Menu />} /> {/* Menu Page */}
-        <Route path="/orders" element={<Orders />} /> {/* Orders Page */}
-        <Route path="/orders/:orderId" element={<OrderConfirmation />} /> {/* Order Confirmation with orderId */}
-        <Route path="/orders/:orderId/edit" element={<EditOrder />} /> {/* Edit Order Page */}
-        <Route path="/reservations/create" element={<Reservations />} /> {/* Reservations Page */}
-        <Route path="/reservations/find" element={<ReservationFind />} /> {/* Find Reservation Page */}
-        <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} /> {/* Reservation Confirmation */}
-        <Route path="/reservations/:reservationId/edit" element={<EditReservation />} /> {/* Edit Reservation Page */}
-        <Route path="/user-reservations" element={<UserReservations />} /> {/* User Reservations Page */}
-        <Route path="/login" element={<LoginPage />} /> {/* Login Page */}
-        <Route path="/register" element={<RegistrationPage />} /> {/* Registration Page */}
-        <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
+        {/* Public Routes */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/reservations/create" element={<Reservations />} />
+        <Route path="/reservations/find" element={<ReservationFind />} />
+        <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegistrationPage />} />
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/not-found" element={<NotFoundPage />} />
+
+        {/* Customer Routes */}
         <Route
-          path="/dashboard"
+          path="/orders"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:orderId"
+          element={
+            <ProtectedRoute>
+              <OrderConfirmation />
             </ProtectedRoute>
           }
         />
@@ -67,17 +75,45 @@ const AnimatedRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/order-confirmation"
+          path="/user-reservations"
           element={
             <ProtectedRoute>
-              <OrderConfirmation />
+              <UserReservations />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Staff and Admin Routes */}
+        <Route
+          path="/orders/:orderId/edit"
+          element={
+            <ProtectedRoute roles={['STAFF', 'ADMIN']}>
+              <EditOrder />
             </ProtectedRoute>
           }
         />
         <Route
+          path="/reservations/:reservationId/edit"
+          element={
+            <ProtectedRoute roles={['STAFF', 'ADMIN']}>
+              <EditReservation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute roles={['STAFF', 'ADMIN']}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Only Route */}
+        <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['ADMIN']}>
               <AdminPage />
             </ProtectedRoute>
           }
@@ -93,6 +129,7 @@ const AppContent: React.FC = () => {
   const isRegistration = location.pathname === '/register';
   const isLandingPage = location.pathname === '/';
   const isDashboard = location.pathname === '/dashboard';
+  const isAdminPage = location.pathname === '/admin';
 
   return (
     <>
@@ -114,7 +151,7 @@ const AppContent: React.FC = () => {
       {/* Blur Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: isLoginPage || isRegistration || isDashboard ? 1 : 0 }}
+        animate={{ opacity: isLoginPage || isRegistration || isDashboard || isAdminPage ? 1 : 0 }}
         transition={{ duration: 0.5 }}
         style={{
           position: 'fixed',
