@@ -1,5 +1,3 @@
-// src/pages/PaymentFailure.tsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Stack } from '@mui/material';
@@ -14,12 +12,11 @@ const PaymentFailure: React.FC = () => {
     };
 
     const handleBrowseProducts = () => {
-        navigate('/menu'); // Adjust the path based on your routing structure
+        navigate('/menu');
     };
 
     const handleContactSupport = () => {
-        // Optionally, navigate to a contact support page or open a modal
-        navigate('/home'); // Adjust the path based on your routing structure
+        navigate('/home');
     };
 
     return (
