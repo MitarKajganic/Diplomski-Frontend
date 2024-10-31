@@ -157,6 +157,9 @@ export interface TransactionDto {
   type: Type;
   method: Method;
   billId: string;
+  stripeUrl: string | null;
+  stripeSessionId: string | null;
+  stripeStatus: string | null;
 }
 
 export interface TransactionCreateDto {

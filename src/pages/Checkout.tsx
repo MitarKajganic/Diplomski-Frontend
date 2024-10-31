@@ -40,7 +40,6 @@ import {
 } from '../types/Interfaces';
 import menuItemBg from '../assets/images/burger.jpg';
 
-
 const Checkout: React.FC = () => {
     const { cartItems, getTotalPrice, clearCart } = useCart();
     const { user } = useContext(AuthContext);
@@ -55,13 +54,6 @@ const Checkout: React.FC = () => {
         phoneNumber: '',
     });
 
-    const [paymentInfo, setPaymentInfo] = useState({
-        cardNumber: '',
-        expirationDate: '',
-        cvv: '',
-        cardHolderName: '',
-    });
-
     const [paymentMethod, setPaymentMethod] = useState<'Card' | 'Cash'>('Card');
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -70,37 +62,8 @@ const Checkout: React.FC = () => {
         setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value });
     };
 
-    const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPaymentInfo({ ...paymentInfo, [e.target.name]: e.target.value });
-    };
-
     const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPaymentMethod(e.target.value as 'Card' | 'Cash');
-    };
-
-    const validateCardNumber = (number: string): boolean => {
-        const regex = /^\d{16}$/;
-        return regex.test(number);
-    };
-
-    const validateExpirationDate = (date: string): boolean => {
-        const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
-        if (!regex.test(date)) return false;
-
-        const [month, year] = date.split('/').map(Number);
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear() % 100;
-        const currentMonth = currentDate.getMonth() + 1;
-
-        if (year < currentYear) return false;
-        if (year === currentYear && month < currentMonth) return false;
-
-        return true;
-    };
-
-    const validateCVV = (cvv: string): boolean => {
-        const regex = /^\d{3}$/;
-        return regex.test(cvv);
     };
 
     const validatePhoneNumber = (phone: string): boolean => {
@@ -110,16 +73,13 @@ const Checkout: React.FC = () => {
 
     const handleCheckout = async () => {
         const { firstName, lastName, street, number, floor, phoneNumber } = deliveryInfo;
-        const { cardNumber, expirationDate, cvv, cardHolderName } = paymentInfo;
 
         if (
             !firstName ||
             !lastName ||
             !street ||
             !number ||
-            !phoneNumber ||
-            (paymentMethod === 'Card' &&
-                (!cardNumber || !expirationDate || !cvv || !cardHolderName))
+            !phoneNumber
         ) {
             toast.error('Please fill in all the required fields.');
             return;
@@ -128,23 +88,6 @@ const Checkout: React.FC = () => {
         if (!validatePhoneNumber(phoneNumber)) {
             toast.error('Please enter a valid phone number (8-11 digits).');
             return;
-        }
-
-        if (paymentMethod === 'Card') {
-            if (!validateCardNumber(cardNumber)) {
-                toast.error('Please enter a valid 16-digit card number.');
-                return;
-            }
-
-            if (!validateExpirationDate(expirationDate)) {
-                toast.error('Please enter a valid expiration date in MM/YY format.');
-                return;
-            }
-
-            if (!validateCVV(cvv)) {
-                toast.error('Please enter a valid 3-digit CVV.');
-                return;
-            }
         }
 
         setLoading(true);
@@ -202,7 +145,11 @@ const Checkout: React.FC = () => {
 
             clearCart();
 
-            navigate(`/orders/${order.id}`, { state: { order: updatedOrder, bill, transaction } });
+            if (paymentMethod === 'Card' && transaction.stripeUrl) {
+                window.location.href = transaction.stripeUrl;
+            } else {
+                navigate(`/orders/${order.id}`, { state: { order: updatedOrder, bill, transaction } });
+            }
         } catch (error: any) {
             console.error('Checkout error:', error);
             toast.error('An error occurred during checkout. Please try again.');
@@ -282,7 +229,7 @@ const Checkout: React.FC = () => {
                                         <Divider sx={{ mt: 2, mb: 2, backgroundColor: '#ffffff' }} />
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Typography variant="h6">Total:</Typography>
-                                            <Typography variant="h6">${getTotalPrice().toFixed(2)}</Typography>
+                                            <Typography variant="h6">${(getTotalPrice() * 1.2).toFixed(2)}</Typography>
                                         </Box>
                                     </Grid>
                                 </Grid>
@@ -457,119 +404,6 @@ const Checkout: React.FC = () => {
                                 </RadioGroup>
                             </FormControl>
                         </Box>
-
-                        {/* Payment Information */}
-                        {paymentMethod === 'Card' && (
-                            <Box sx={{ mb: 4 }}>
-                                <Typography variant="h5" gutterBottom>
-                                    Payment Information
-                                </Typography>
-                                <Divider sx={{ mb: 2, backgroundColor: '#ffffff' }} />
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label="Card Holder Name"
-                                            name="cardHolderName"
-                                            value={paymentInfo.cardHolderName}
-                                            onChange={handlePaymentChange}
-                                            fullWidth
-                                            required
-                                            InputLabelProps={{ style: { color: '#ffffff' } }}
-                                            InputProps={{
-                                                style: { color: '#ffffff', borderColor: '#ffffff' },
-                                            }}
-                                            sx={{
-                                                '& .MuiInputLabel-root': { color: '#ffffff' },
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': { borderColor: '#ffffff' },
-                                                    '&:hover fieldset': { borderColor: '#ffffff' },
-                                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
-                                                },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label="Card Number"
-                                            name="cardNumber"
-                                            value={paymentInfo.cardNumber}
-                                            onChange={handlePaymentChange}
-                                            fullWidth
-                                            required
-                                            type="tel"
-                                            placeholder="1234567812345678"
-                                            InputLabelProps={{ style: { color: '#ffffff' } }}
-                                            InputProps={{
-                                                style: { color: '#ffffff', borderColor: '#ffffff' },
-                                                inputProps: { maxLength: 16 },
-                                            }}
-                                            helperText="Enter 16-digit card number"
-                                            sx={{
-                                                '& .MuiInputLabel-root': { color: '#ffffff' },
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': { borderColor: '#ffffff' },
-                                                    '&:hover fieldset': { borderColor: '#ffffff' },
-                                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
-                                                },
-                                                '& .MuiFormHelperText-root': { color: '#ffffff' },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Expiration Date (MM/YY)"
-                                            name="expirationDate"
-                                            value={paymentInfo.expirationDate}
-                                            onChange={handlePaymentChange}
-                                            fullWidth
-                                            required
-                                            placeholder="MM/YY"
-                                            InputLabelProps={{ style: { color: '#ffffff' } }}
-                                            InputProps={{
-                                                style: { color: '#ffffff', borderColor: '#ffffff' },
-                                            }}
-                                            helperText="Format: MM/YY"
-                                            sx={{
-                                                '& .MuiInputLabel-root': { color: '#ffffff' },
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': { borderColor: '#ffffff' },
-                                                    '&:hover fieldset': { borderColor: '#ffffff' },
-                                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
-                                                },
-                                                '& .MuiFormHelperText-root': { color: '#ffffff' },
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="CVV"
-                                            name="cvv"
-                                            value={paymentInfo.cvv}
-                                            onChange={handlePaymentChange}
-                                            fullWidth
-                                            required
-                                            type="tel"
-                                            placeholder="123"
-                                            InputLabelProps={{ style: { color: '#ffffff' } }}
-                                            InputProps={{
-                                                style: { color: '#ffffff', borderColor: '#ffffff' },
-                                                inputProps: { maxLength: 3 },
-                                            }}
-                                            helperText="3-digit CVV"
-                                            sx={{
-                                                '& .MuiInputLabel-root': { color: '#ffffff' },
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': { borderColor: '#ffffff' },
-                                                    '&:hover fieldset': { borderColor: '#ffffff' },
-                                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
-                                                },
-                                                '& .MuiFormHelperText-root': { color: '#ffffff' },
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        )}
 
                         {/* Confirm Purchase Button */}
                         <Box sx={{ textAlign: 'center', mb: 4 }}>

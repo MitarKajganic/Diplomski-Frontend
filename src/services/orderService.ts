@@ -73,3 +73,9 @@ export const updateOrder = async (orderId: string, orderCreateDto: OrderCreateDt
   const response = await api.put(`/orders/update/${orderId}`, orderCreateDto);
   return response.data;
 };
+
+// Get transaction by session ID
+export const getTransactionBySessionId = async (sessionId: string): Promise<TransactionDto> => {
+  const response = await api.get<TransactionDto>(`/transactions/stripe/${sessionId}`);
+  return response.data;
+};

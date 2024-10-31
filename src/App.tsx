@@ -16,6 +16,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Orders from './pages/Orders';
 import Reservations from './pages/ReservationsCreate';
 import ReservationConfirmation from './pages/ReservationConfirmation';
+import PaymentStatus from './pages/PaymentStatus';
+import PaymentFailure from './pages/PaymentFailure';
 import UserReservations from './pages/UserReservations';
 import ReservationFind from './pages/ReservationFind';
 import EditOrder from './pages/EditOrder';
@@ -44,6 +46,8 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="/reservations/find" element={<ReservationFind />} />
         <Route path="/reservations/:reservationId" element={<ReservationConfirmation />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/payment-status" element={<PaymentStatus />} />
+        <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route path="*" element={<NotFoundPage />} />
